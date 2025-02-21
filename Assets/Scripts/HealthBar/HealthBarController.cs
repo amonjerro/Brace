@@ -1,16 +1,41 @@
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class HealthBarController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField]
+    SpriteRenderer healthBarRenderer;
+    [SerializeField]
+    SpriteRenderer jumpActionSpriteRenderer;
+    [SerializeField]
+    SpriteRenderer shootActionSpriteRenderer;
+    [SerializeField]
+    SpriteRenderer blockActionSpriteRenderer;
+
+    [SerializeField]
+    [Range(0f, 0.5f)]
+    float ValueChangeRate;
+
+    float CurrentValue;
+    float DesiredValue;
+
+    private void Awake()
     {
-        
+        CurrentValue = 1f;
+        DesiredValue = 1f;
     }
 
-    // Update is called once per frame
-    void Update()
+
+    public void Update()
     {
-        
+        if (DesiredValue < CurrentValue){
+            CurrentValue -= ValueChangeRate * Time.deltaTime;
+        }
+        healthBarRenderer.material.SetFloat("_HealthRemaining", CurrentValue);
+    }
+
+    public void UpdateHealth(float value)
+    {
+        DesiredValue = value;
     }
 }

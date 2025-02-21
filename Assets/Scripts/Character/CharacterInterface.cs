@@ -25,6 +25,10 @@ public class CharacterInterface : MonoBehaviour
     [SerializeField]
     InputActionAsset defaultActionAsset;
 
+    [SerializeField]
+    HealthBarController playerHealthBar;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -38,6 +42,7 @@ public class CharacterInterface : MonoBehaviour
             AIController controller = createdCharacter.gameObject.AddComponent<AIController>();
             controller.SetStrategy(aiType);
         }
+        createdCharacter.SetHealthBarController(playerHealthBar);
     }
 
     // Update is called once per frame

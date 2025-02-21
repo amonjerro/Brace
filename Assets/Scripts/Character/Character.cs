@@ -12,12 +12,15 @@ public class Character : MonoBehaviour
 
     [SerializeField]
     bool isFlipped;
+
+    HealthBarController healthBarController;
     
     // Base values
     Vector3 forward3;
     float originalYPosition;
     BulletPool bulletPool;
     bool bIsGrounded = true;
+    bool bCanBeDamaged = true;
 
     // Jump duration modifier
     float jumpTimer = 0;
@@ -33,7 +36,8 @@ public class Character : MonoBehaviour
     // Constants
     const float HALF_PI = 0.5f * Mathf.PI;
     const float TWO_PI = 2 * Mathf.PI;
-    
+    const float MAX_HEALTH = 5.0f;
+    float currentHealth = 5.0f;
 
     private void Start()
     {
@@ -142,5 +146,25 @@ public class Character : MonoBehaviour
     public bool IsWithinParryWindow()
     {
         return blockTimer <= CharacterData.characterParameters.parryWindow;
+    }
+
+    public void SetHealthBarController(HealthBarController controller)
+    {
+        healthBarController = controller;
+    }
+
+    public void TakeDamage()
+    {
+        if (!bCanBeDamaged)
+        {
+            return;
+        }
+        currentHealth -= 1;
+        healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
+        if (currentHealth <= 0)
+        {
+           // End Game
+           bCanBeDamaged = false;
+        }
     }
 }

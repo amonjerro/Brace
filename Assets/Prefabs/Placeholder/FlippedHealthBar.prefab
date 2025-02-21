@@ -114,7 +114,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.19, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.95, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4488590476077075426}
@@ -142,7 +142,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 884f805dc91110b41a90759231ddde0c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -357,6 +357,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4488590476077075426}
+  - component: {fileID: 8929340961839987331}
   m_Layer: 0
   m_Name: FlippedHealthBar
   m_TagString: Untagged
@@ -384,6 +385,23 @@ Transform:
   - {fileID: 9066708561463765913}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8929340961839987331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8030801572162841304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 052643abdc870d94c82705c102f90a7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBarRenderer: {fileID: 6797091929603551330}
+  jumpActionSpriteRenderer: {fileID: 2085257326654505222}
+  shootActionSpriteRenderer: {fileID: 5044308777955248607}
+  blockActionSpriteRenderer: {fileID: 4201875018542115806}
+  ValueChangeRate: 0.35
 --- !u!1 &8155578371117686104
 GameObject:
   m_ObjectHideFlags: 0

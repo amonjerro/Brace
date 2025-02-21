@@ -77,6 +77,12 @@ public class Bullet : MonoBehaviour
                 return;
             }
         }
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Character chr = collision.gameObject.GetComponent<Character>();
+            chr.TakeDamage();
+        }
         pool.BulletReset(this);
     }
 }
