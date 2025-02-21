@@ -222,7 +222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpawnLocation: {x: 5, y: -3, z: 0}
   controlType: 1
-  aiType: 3
+  aiType: 0
   CharacterPrefab: {fileID: 4603212316668437401, guid: 515ff16262e94164f9821ad47274eea5, type: 3}
   defaultActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   playerHealthBar: {fileID: 154794517}

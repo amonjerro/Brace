@@ -312,6 +312,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterData: {fileID: 11400000, guid: 16c98da5913c9544586948fb021f3c72, type: 2}
   BlockingField: {fileID: 2256607451010634687}
+  snapThreshold: 0.9519
   isFlipped: 0
 --- !u!61 &6924697691713441160
 BoxCollider2D:
