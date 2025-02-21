@@ -22,3 +22,4 @@ MonoBehaviour:
     bulletParams:
       moveSpeed: 10
       bulletSprite: {fileID: 0}
+      bulletDamage: 1
