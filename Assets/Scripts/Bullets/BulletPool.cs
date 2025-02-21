@@ -4,29 +4,29 @@ using UnityEngine;
 public class BulletPool : MonoBehaviour
 {
     [SerializeField]
-    Bullet bulletPrefab;
+    GameObject bulletPrefab;
 
     // Object pooling
-    Queue<Bullet> availableBullets;
+    Queue<GameObject> availableBullets;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        availableBullets = new Queue<Bullet>();
+        availableBullets = new Queue<GameObject>();
         foreach(Transform child in transform)
         {
             Bullet bullet = child.gameObject.GetComponent<Bullet>();
-            availableBullets.Enqueue(bullet);
+            availableBullets.Enqueue(bullet.gameObject);
         }
     }
 
-    public Bullet GetBullet()
+    public GameObject GetBullet()
     {
         if (availableBullets.Count == 0)
         {
             availableBullets.Enqueue(Instantiate(bulletPrefab, transform));  
         }
-        Bullet b = availableBullets.Dequeue();
+        GameObject b = availableBullets.Dequeue();
         return b;
     }
     
@@ -34,6 +34,6 @@ public class BulletPool : MonoBehaviour
     {
         bullet.ResetBullet();
         bullet.transform.position = transform.position;
-        availableBullets.Enqueue(bullet);
+        availableBullets.Enqueue(bullet.gameObject);
     }
 }

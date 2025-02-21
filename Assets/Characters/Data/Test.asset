@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Test
   m_EditorClassIdentifier: 
   characterParameters:
-    jumpDuration: 0.75
+    jumpDuration: 0.66
     jumpHeight: 4
     shotCooldown: 1
+    blockCooldown: 1
+    parryWindow: 0.045
     sprite: {fileID: 0}
     bulletParams:
-      moveSpeed: 4
+      moveSpeed: 10
       bulletSprite: {fileID: 0}

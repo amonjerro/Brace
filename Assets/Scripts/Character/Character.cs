@@ -9,6 +9,9 @@ public class Character : MonoBehaviour
 
     [SerializeField]
     GameObject BlockingField;
+
+    [SerializeField]
+    bool isFlipped;
     
     // Base values
     Vector3 forward3;
@@ -21,7 +24,11 @@ public class Character : MonoBehaviour
 
     // Timers for game actions
     float blockTimer = 0;
-    float cooldownTimer = 0;
+    float blockUptickSpeed = 0;
+    float blockCooldownTimer = 0;
+    float blockCooldownSpeed = 0;
+    float attackCooldown = 0;
+    float attackCooldownSpeed = 0;
     
     // Constants
     const float HALF_PI = 0.5f * Mathf.PI;
@@ -32,29 +39,33 @@ public class Character : MonoBehaviour
     {
         bulletPool = FindAnyObjectByType<BulletPool>();
         forward3 = transform.right;
+        if (isFlipped) {
+            forward3 *= -1;
+        }
         originalYPosition = transform.position.y;
     }
 
     private void Update()
     {
-        cooldownTimer -= Time.deltaTime;
-        // Prevent underflow
-        if (cooldownTimer < -1000)
+        attackCooldown -= Time.deltaTime * attackCooldownSpeed;
+        blockTimer += Time.deltaTime * blockUptickSpeed;
+        blockCooldownTimer -= Time.deltaTime * blockCooldownSpeed;
+
+        if (attackCooldown <= 0)
         {
-            cooldownTimer = 0;
+            attackCooldownSpeed = 0;
         }
 
-        blockTimer -= Time.deltaTime;
-        // Prevent underflow
-        if (blockTimer < -1000) {
-            blockTimer = 0;
+        if (blockCooldownTimer <= 0)
+        {
+            blockCooldownSpeed = 0;
         }
 
+        // Jump Update
         if (bIsGrounded)
         {
             return;
         }
-
         jumpTimer += Time.deltaTime;
         transform.position = new Vector3(transform.position.x, ParabolicPosition(), transform.position.z);
 
@@ -74,24 +85,50 @@ public class Character : MonoBehaviour
     // Handle Player Input
     private void OnAttack(InputValue input)
     {
-        if (cooldownTimer > 0)
+        // Ignore input while cooldown up
+        if (attackCooldown > 0)
         {
             return;
         }
-        Bullet b = bulletPool.GetBullet();
-        b.transform.position = transform.position + forward3;
+        Bullet b = bulletPool.GetBullet().GetComponent<Bullet>();
+        b.transform.position = transform.position + forward3 + (forward3 * 0.1f);
         b.Launch(CharacterData.characterParameters.bulletParams, forward3);
-        cooldownTimer = CharacterData.characterParameters.shotCooldown;
+        attackCooldown = CharacterData.characterParameters.shotCooldown;
+        attackCooldownSpeed = 1.0f;
     }
+
 
     private void OnBlock(InputValue input)
     {
-        if (blockTimer > 0)
+        // Ignore input while cooldown up
+        if (blockCooldownTimer > 0)
         {
             return;
         }
+
+        if (input.isPressed)
+        {
+            BeginBlock();
+        } else
+        {
+            ReleaseBlock();
+        }
+    }
+
+    private void BeginBlock()
+    {
+        
+        blockUptickSpeed = 1.0f;
         BlockingField.SetActive(true);
-        blockTimer = CharacterData.characterParameters.blockCooldown;
+    }
+
+    private void ReleaseBlock()
+    {
+        blockTimer = 0;
+        blockUptickSpeed = 0.0f;
+        blockCooldownSpeed = 1.0f;
+        blockCooldownTimer = CharacterData.characterParameters.blockCooldown;
+        BlockingField.SetActive(false);
     }
 
     private void OnJump(InputValue input)
@@ -100,5 +137,10 @@ public class Character : MonoBehaviour
             bIsGrounded = false;
             jumpTimer = 0;
         }
+    }
+
+    public bool IsWithinParryWindow()
+    {
+        return blockTimer <= CharacterData.characterParameters.parryWindow;
     }
 }

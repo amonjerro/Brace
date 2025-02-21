@@ -65,6 +65,18 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!bBulletInPlay)
+        {
+            return;
+        }
+        if (collision.gameObject.CompareTag("Shield"))
+        {
+            Shield s = collision.gameObject.GetComponent<Shield>(); 
+            if (s.IsParry) {
+                direction = -1 * direction;
+                return;
+            }
+        }
         pool.BulletReset(this);
     }
 }

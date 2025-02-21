@@ -7,8 +7,11 @@ public struct CharParams
     public float jumpDuration;
     public float jumpHeight;
     public float shotCooldown;
-    public float blockDuration;
+
+    // Defense
     public float blockCooldown;
+    public float parryWindow;
+
     public Sprite sprite;
     public BulletParams bulletParams;
 

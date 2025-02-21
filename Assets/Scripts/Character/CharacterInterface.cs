@@ -7,14 +7,6 @@ public enum ControlTypes
     AI
 }
 
-public enum AIControlTypes
-{
-    Static,
-    Jumper,
-    Blocker,
-    FullAI
-}
-
 
 public class CharacterInterface : MonoBehaviour
 {
@@ -25,7 +17,7 @@ public class CharacterInterface : MonoBehaviour
     ControlTypes controlType;
 
     [SerializeField]
-    AIControlTypes AIControlType;
+    AIControlTypes aiType;
 
     [SerializeField]
     Character CharacterPrefab;
@@ -41,6 +33,10 @@ public class CharacterInterface : MonoBehaviour
         {
             PlayerInput input = createdCharacter.gameObject.AddComponent<PlayerInput>();
             input.actions = defaultActionAsset;
+        } else
+        {
+            AIController controller = createdCharacter.gameObject.AddComponent<AIController>();
+            controller.SetStrategy(aiType);
         }
     }
 
