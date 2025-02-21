@@ -6,6 +6,9 @@ public struct CharParams
 {
     public float jumpDuration;
     public float jumpHeight;
+    public float shotCooldown;
+    public float blockDuration;
+    public float blockCooldown;
     public Sprite sprite;
     public BulletParams bulletParams;
 

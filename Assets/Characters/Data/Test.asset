@@ -15,6 +15,7 @@ MonoBehaviour:
   characterParameters:
     jumpDuration: 0.75
     jumpHeight: 4
+    shotCooldown: 1
     sprite: {fileID: 0}
     bulletParams:
       moveSpeed: 4
