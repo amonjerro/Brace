@@ -1,5 +1,10 @@
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
+public enum CooldownType
+{
+    Block,
+    Jump,
+    Shoot
+}
 
 public class HealthBarController : MonoBehaviour
 {
@@ -37,5 +42,20 @@ public class HealthBarController : MonoBehaviour
     public void UpdateHealth(float value)
     {
         DesiredValue = value;
+    }
+
+    public void UpdateCooldown(CooldownType type, float value)
+    {
+        switch(type) {
+            case CooldownType.Jump:
+                jumpActionSpriteRenderer.material.SetFloat("_Arc", value);
+                break;
+            case CooldownType.Shoot:
+                shootActionSpriteRenderer.material.SetFloat("_Arc", value);
+                break;
+            case CooldownType.Block:
+                blockActionSpriteRenderer.material.SetFloat("_Arc", value);
+                break;
+        }
     }
 }

@@ -33,7 +33,6 @@ public class Character : MonoBehaviour
     float attackCooldownSpeed = 0;
     
     // Constants
-    const float HALF_PI = 0.5f * Mathf.PI;
     const float TWO_PI = 2 * Mathf.PI;
     const float MAX_HEALTH = 5.0f;
     float currentHealth = 5.0f;
@@ -58,11 +57,13 @@ public class Character : MonoBehaviour
         {
             attackCooldownSpeed = 0;
         }
+        healthBarController.UpdateCooldown(CooldownType.Shoot, TWO_PI * (attackCooldown / CharacterData.characterParameters.shotCooldown));
 
         if (blockCooldownTimer <= 0)
         {
             blockCooldownSpeed = 0;
         }
+        healthBarController.UpdateCooldown(CooldownType.Block, TWO_PI * (blockCooldownTimer / CharacterData.characterParameters.blockCooldown));
 
         // Jump Update
         if (bIsGrounded)
