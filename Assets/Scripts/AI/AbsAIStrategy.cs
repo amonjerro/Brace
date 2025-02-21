@@ -1,9 +1,11 @@
-using UnityEngine;
 using UnityEngine.InputSystem;
+
+// AI behavior implemented through a strategy pattern
+// Sends inputs to the InputSystem handlers the character object has
 public abstract class AbsAIStrategy
 {
     Character character;
-    InputValue nullInputValue = new InputValue();
+    protected InputValue defaultInputValue = new InputValue();
     public void SetCharacter(Character character)
     {
         this.character = character;
@@ -11,23 +13,23 @@ public abstract class AbsAIStrategy
 
     protected void Jump()
     {
-        character.SendMessage("OnJump", nullInputValue);
+        character.SendMessage("OnJump", defaultInputValue);
     }
 
     protected void Attack()
     {
-        character.SendMessage("OnAttack", nullInputValue);
+        character.SendMessage("OnAttack", defaultInputValue);
     }
 
     protected void Block()
     {
-        character.SendMessage("OnBlock", nullInputValue);
+        character.SendMessage("OnBlock", defaultInputValue);
     }
 
     public abstract void OnUpdate();
 }
 
-
+// This AI only jumps
 public class JumperStrategy : AbsAIStrategy
 {
     public override void OnUpdate()
@@ -36,6 +38,7 @@ public class JumperStrategy : AbsAIStrategy
     }
 }
 
+// This AI only blocks
 public class BlockerStrategy : AbsAIStrategy
 {
     public override void OnUpdate()
@@ -44,6 +47,7 @@ public class BlockerStrategy : AbsAIStrategy
     }
 }
 
+// This AI only shoots
 public class ShooterStrategy : AbsAIStrategy
 {
     public override void OnUpdate()
@@ -52,6 +56,7 @@ public class ShooterStrategy : AbsAIStrategy
     }
 }
 
+// This AI just sits there
 public class StaticStrategy : AbsAIStrategy
 {
     public override void OnUpdate()

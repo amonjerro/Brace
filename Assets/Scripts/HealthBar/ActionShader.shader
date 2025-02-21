@@ -51,10 +51,13 @@ Shader "Unlit/ActionShader"
                 fixed4 col = tex2D(_MainTex, i.uv);
 
                 // Position of Fragment relative to center
-
                 float angleToCenter = atan2(i.uv.y*2-1, i.uv.x*2-1) + UNITY_PI;
+                
+                // Create the transparency mask
                 float mask = angleToCenter < _Arc;
-                return fixed4(col.xyz*0.1,col.a * mask*0.5);
+
+                // Pass all that to the color
+                return fixed4(col.xyz*0.1,col.a * mask*0.8);
             }
             ENDCG
         }

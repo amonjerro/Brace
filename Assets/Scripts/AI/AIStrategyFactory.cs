@@ -3,10 +3,14 @@ public enum AIControlTypes
     Static,
     Jumper,
     Blocker,
+    Parrier,
     Shooter,
     FullAI
 }
 
+/// <summary>
+/// Helper class to make new AI Strategies
+/// </summary>
 public static class StrategyFactory
 {
     public static AbsAIStrategy MakeStrategy(AIControlTypes controlType)

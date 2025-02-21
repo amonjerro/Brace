@@ -39,11 +39,18 @@ public class HealthBarController : MonoBehaviour
         healthBarRenderer.material.SetFloat("_HealthRemaining", CurrentValue);
     }
 
+    // Updates the desired value of the health to allow for gradual decrease of health in the UI
     public void UpdateHealth(float value)
     {
         DesiredValue = value;
     }
 
+
+    /// <summary>
+    /// Updates the cooldown user feedback spheres
+    /// </summary>
+    /// <param name="type">The cooldown sphere to update</param>
+    /// <param name="value">The current angle of the arc for the timer. Must be in radians</param>
     public void UpdateCooldown(CooldownType type, float value)
     {
         switch(type) {

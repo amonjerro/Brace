@@ -45,6 +45,7 @@ Shader "Unlit/BarShader"
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
+                // Draw the bar that represents the players remaining health
                 float mask = i.uv.x <= _HealthRemaining;
                 return col * mask;
             }

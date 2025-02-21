@@ -20,6 +20,7 @@ public class Character : MonoBehaviour
     BulletPool bulletPool;
     bool bIsGrounded = true;
     bool bCanBeDamaged = true;
+    bool bBlockIsPressed = false;
 
     // Jump duration modifier
     float jumpTimer = 0;
@@ -37,6 +38,7 @@ public class Character : MonoBehaviour
     const float MAX_HEALTH = 5.0f;
     float currentHealth = 5.0f;
 
+    // Unity lifecycle // 
     private void Start()
     {
         bulletPool = FindAnyObjectByType<BulletPool>();
@@ -48,6 +50,38 @@ public class Character : MonoBehaviour
     }
 
     private void Update()
+    {
+        UpdateTimersAndUI();
+
+        // Jump Update
+        if (bIsGrounded)
+        {
+            return;
+        }
+        jumpTimer += Time.deltaTime;
+        transform.position = new Vector3(transform.position.x, ParabolicPosition(), transform.position.z);
+
+        if (jumpTimer > CharacterData.characterParameters.jumpDuration)
+        {
+            bIsGrounded = true;
+            transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
+        }
+    }
+    
+    // Utility methods //
+    float ParabolicPosition()
+    {
+        float t = jumpTimer / CharacterData.characterParameters.jumpDuration;
+        return CharacterData.characterParameters.jumpHeight * ( -4 * t * t + 4 * t) + originalYPosition;
+    }
+
+    public void SetHealthBarController(HealthBarController controller)
+    {
+        healthBarController = controller;
+    }
+
+    // Updates all cooldowns and informs the UI of any relevant changes
+    public void UpdateTimersAndUI()
     {
         attackCooldown -= Time.deltaTime * attackCooldownSpeed;
         blockTimer += Time.deltaTime * blockUptickSpeed;
@@ -64,33 +98,38 @@ public class Character : MonoBehaviour
             blockCooldownSpeed = 0;
         }
         healthBarController.UpdateCooldown(CooldownType.Block, TWO_PI * (blockCooldownTimer / CharacterData.characterParameters.blockCooldown));
+    }
 
-        // Jump Update
-        if (bIsGrounded)
+    // Gameplay functions //
+
+    // Test whether the block still counts as a parry
+    public bool IsWithinParryWindow()
+    {
+        return blockTimer <= CharacterData.characterParameters.parryWindow;
+    }
+
+    // Change the player's life total based on the damage they've taken.
+    // Show feedback to the player that damage has been done
+    public void TakeDamage(float value)
+    {
+        if (!bCanBeDamaged)
         {
             return;
         }
-        jumpTimer += Time.deltaTime;
-        transform.position = new Vector3(transform.position.x, ParabolicPosition(), transform.position.z);
-
-        if (jumpTimer > CharacterData.characterParameters.jumpDuration)
+        currentHealth -= value;
+        healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
+        if (currentHealth <= 0)
         {
-            bIsGrounded = true;
-            transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
+            // End Game
+            bCanBeDamaged = false;
         }
     }
 
-    float ParabolicPosition()
-    {
-        float t = jumpTimer / CharacterData.characterParameters.jumpDuration;
-        return CharacterData.characterParameters.jumpHeight * ( -4 * t * t + 4 * t) + originalYPosition;
-    }
-
-    // Handle Player Input
+    // Handle Player Input // 
     private void OnAttack(InputValue input)
     {
-        // Ignore input while cooldown up
-        if (attackCooldown > 0)
+        // Ignore input while cooldown up or is blocking
+        if (attackCooldown > 0 || bBlockIsPressed)
         {
             return;
         }
@@ -115,17 +154,25 @@ public class Character : MonoBehaviour
             BeginBlock();
         } else
         {
+            if (!bBlockIsPressed)
+            {
+                return;
+            }
             ReleaseBlock();
         }
     }
 
+    // What to do when the player begins blocking
+    // TODO - research how to do input buffering to prevent players from feeling that they couldn't block
     private void BeginBlock()
     {
         
         blockUptickSpeed = 1.0f;
         BlockingField.SetActive(true);
+        bBlockIsPressed = true;
     }
 
+    // What to do when the player stops blocking
     private void ReleaseBlock()
     {
         blockTimer = 0;
@@ -133,6 +180,7 @@ public class Character : MonoBehaviour
         blockCooldownSpeed = 1.0f;
         blockCooldownTimer = CharacterData.characterParameters.blockCooldown;
         BlockingField.SetActive(false);
+        bBlockIsPressed = false;
     }
 
     private void OnJump(InputValue input)
@@ -143,28 +191,6 @@ public class Character : MonoBehaviour
         }
     }
 
-    public bool IsWithinParryWindow()
-    {
-        return blockTimer <= CharacterData.characterParameters.parryWindow;
-    }
 
-    public void SetHealthBarController(HealthBarController controller)
-    {
-        healthBarController = controller;
-    }
-
-    public void TakeDamage()
-    {
-        if (!bCanBeDamaged)
-        {
-            return;
-        }
-        currentHealth -= 1;
-        healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
-        if (currentHealth <= 0)
-        {
-           // End Game
-           bCanBeDamaged = false;
-        }
-    }
+    
 }

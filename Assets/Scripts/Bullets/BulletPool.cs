@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Simple object pool for bullets
+/// </summary>
 public class BulletPool : MonoBehaviour
 {
     [SerializeField]
@@ -20,6 +24,7 @@ public class BulletPool : MonoBehaviour
         }
     }
 
+    // Provides the next bullet available or creates a new one if all are empty
     public GameObject GetBullet()
     {
         if (availableBullets.Count == 0)
@@ -30,6 +35,7 @@ public class BulletPool : MonoBehaviour
         return b;
     }
     
+    // Resets a bullet back into the pool
     public void BulletReset(Bullet bullet)
     {
         bullet.ResetBullet();

@@ -7,7 +7,6 @@ public enum ControlTypes
     AI
 }
 
-
 public class CharacterInterface : MonoBehaviour
 {
     [SerializeField]
@@ -29,7 +28,7 @@ public class CharacterInterface : MonoBehaviour
     HealthBarController playerHealthBar;
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // On start, this interface sets the status of the players based on incoming information
     void Start()
     {
         Character createdCharacter = Instantiate(CharacterPrefab, SpawnLocation, Quaternion.identity);
@@ -43,11 +42,5 @@ public class CharacterInterface : MonoBehaviour
             controller.SetStrategy(aiType);
         }
         createdCharacter.SetHealthBarController(playerHealthBar);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
