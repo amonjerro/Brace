@@ -1,12 +1,12 @@
 using System;
 
-
+// Conditions for the state machine transitions
 public abstract class Condition
 {
     public abstract bool Test();
 }
 
-public abstract class AbsValueCondition<T> : Condition where T : class, IComparable<T>
+public abstract class AbsValueCondition<T> : Condition where T : IComparable<T>
 {
     protected T ConditionValue;
     public void SetValue(T value)
@@ -15,7 +15,8 @@ public abstract class AbsValueCondition<T> : Condition where T : class, ICompara
     }
 }
 
-public class WithinRangeCondition<T> : AbsValueCondition<T> where T : class, IComparable<T>
+// Evaluation Conditions
+public class WithinRangeCondition<T> : AbsValueCondition<T> where T : IComparable<T>
 {
     T MinValue;
     T MaxValue;
@@ -33,7 +34,7 @@ public class WithinRangeCondition<T> : AbsValueCondition<T> where T : class, ICo
     }
 }
 
-public class EqualsCondition<T> : AbsValueCondition<T> where T : class, IComparable<T>
+public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable<T>
 {
     T ExpectedValue;
 
@@ -48,7 +49,7 @@ public class EqualsCondition<T> : AbsValueCondition<T> where T : class, ICompara
     }
 }
 
-// Logic Gates
+// Compound conditions types
 public class AndCondition : Condition
 {
     Condition ConditionA;

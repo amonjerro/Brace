@@ -7,24 +7,31 @@ public enum ControlTypes
     AI
 }
 
+// Sets up characters based on existing configuration
 public class CharacterInterface : MonoBehaviour
 {
     [SerializeField]
+    [Tooltip("Where will this player spawn")]
     Vector3 SpawnLocation;
 
     [SerializeField]
+    [Tooltip("Who will be in control of this player")]
     ControlTypes controlType;
 
     [SerializeField]
+    [Tooltip("If AI is controlling this character, what strategy should it use?")]
     AIControlTypes aiType;
 
     [SerializeField]
+    [Tooltip("The character prefab object")]
     Character CharacterPrefab;
 
     [SerializeField]
+    [Tooltip("The action asset to assign for player input")]
     InputActionAsset defaultActionAsset;
 
     [SerializeField]
+    [Tooltip("Which health bar to assign to this player")]
     HealthBarController playerHealthBar;
 
 

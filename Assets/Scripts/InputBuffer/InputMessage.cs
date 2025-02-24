@@ -1,4 +1,4 @@
-namespace InputBuffer{
+namespace InputManagement{
     public enum EInput
     {
         Fireball,
@@ -8,8 +8,8 @@ namespace InputBuffer{
 
     public class InputMessage
     {
-        EInput actionType;
-        bool consumed;
+        public EInput actionType;
+        public bool consumed;
     }
 }
 

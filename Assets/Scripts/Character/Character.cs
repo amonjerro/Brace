@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InputManagement;
 
 public class Character : MonoBehaviour
 { 
@@ -13,6 +14,7 @@ public class Character : MonoBehaviour
     bool isFlipped;
 
     HealthBarController healthBarController;
+    InputBuffer inputBuffer;
     
     // Base values
     Vector3 forward3;
@@ -122,6 +124,7 @@ public class Character : MonoBehaviour
         {
             // End Game
             bCanBeDamaged = false;
+            ServiceLocator.Instance.GetService<BattleManager>().SetGameToOver();
         }
     }
 

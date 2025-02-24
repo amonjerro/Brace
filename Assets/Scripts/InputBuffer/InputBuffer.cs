@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 
-namespace InputBuffer {
+namespace InputManagement {
     public class InputBuffer
     {
         int bufferLength;
         int duration;
         InputMessage activeMessage;
-        List<InputBufferItem> inputQueue;
+        Queue<InputBufferItem> inputQueue;
 
         public InputBuffer(int duration, int length)
         {
@@ -14,14 +14,35 @@ namespace InputBuffer {
             this.duration = duration;
         }
 
-        public void Add(InputBufferItem item)
+        public InputBufferItem Push(InputBufferItem item)
         {
+            InputBufferItem returnable = null;
             if (inputQueue.Count >= bufferLength)
+            {
+                returnable = inputQueue.Dequeue();
+            }
+
+            inputQueue.Enqueue(item);
+            return returnable;
+        }
+
+        public void ClearActive()
+        {
+            activeMessage = null;
+        }
+
+        public void SetActive(InputMessage newActive)
+        {
+            if (!activeMessage.consumed)
             {
                 return;
             }
+            activeMessage = newActive;
+        }
 
-            inputQueue.Add(item);
+        public void SetActiveConsumed()
+        {
+            activeMessage.consumed = true;
         }
     }
 }

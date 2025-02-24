@@ -8,9 +8,17 @@ public enum CharacterStates
     Blocking
 }
 
-public abstract class AbsState
+public enum GameStates
 {
-    protected List<Transition> transitions;
+    Countdown,
+    Active,
+    Over
+}
+
+public abstract class AbsState<EState> where EState : System.Enum
+{
+    protected EState stateValue;
+    public List<Transition<EState>> transitions;
     protected abstract void OnUpdate();
     protected abstract void OnEnter();
     protected abstract void OnExit();
@@ -27,5 +35,10 @@ public abstract class AbsState
 
     public void Exit() { 
         OnExit(); 
+    }
+
+    public override string ToString()
+    {
+        return stateValue.ToString();
     }
 }

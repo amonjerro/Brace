@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace InputBuffer
+namespace InputManagement
 {
     public class InputBufferItem
     {
