@@ -83,6 +83,7 @@ public class GameOverState : AbsState<GameStates>
     }
     protected override void OnEnter()
     {
+        Debug.Log("Game is over!");
         // Pause the game
         Time.timeScale = 0;
 

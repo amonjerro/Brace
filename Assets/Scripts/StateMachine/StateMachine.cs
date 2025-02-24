@@ -1,3 +1,5 @@
+using UnityEngine;
+
 /// <summary>
 /// Generic state machine for the various game elements that will require one
 /// </summary>
@@ -19,6 +21,7 @@ public class StateMachine<EState> where EState : System.Enum
                 break;
             }
         }
+        //Debug.Log(_currentState.ToString());
     }
 
     /// <summary>

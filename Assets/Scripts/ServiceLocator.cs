@@ -33,6 +33,6 @@ public class ServiceLocator : MonoBehaviour
         T component = GetComponentInChildren<T>();
         if (!component) { return null; }
         serviceCache.Add(typeof(T), component);
-        return null;
+        return component;
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 // Conditions for the state machine transitions
 public abstract class Condition

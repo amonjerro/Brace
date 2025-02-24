@@ -34,6 +34,11 @@ public class BattleManager : MonoBehaviour
         stateMachine.SetStartingState(countdownState);
     }
 
+    private void Update()
+    {
+        stateMachine.Update();
+    }
+
     public void SetGameToOver()
     {
         gameOver?.Invoke();
