@@ -15,6 +15,7 @@ public class Character : MonoBehaviour
 
     HealthBarController healthBarController;
     InputBuffer inputBuffer;
+    StateMachine<CharacterStates> stateMachine;
     
     // Base values
     Vector3 forward3;
@@ -43,6 +44,7 @@ public class Character : MonoBehaviour
     // Unity lifecycle // 
     private void Start()
     {
+
         bulletPool = FindAnyObjectByType<BulletPool>();
         forward3 = transform.right;
         if (isFlipped) {

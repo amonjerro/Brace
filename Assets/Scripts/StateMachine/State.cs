@@ -5,7 +5,8 @@ public enum CharacterStates
     Jumping,
     DownJumping,
     Attacking,
-    Blocking
+    Blocking,
+    Parrying
 }
 
 public enum GameStates

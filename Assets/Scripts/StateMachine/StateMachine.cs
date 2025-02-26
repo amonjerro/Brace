@@ -6,8 +6,9 @@ using UnityEngine;
 /// <typeparam name="EState">The enums that define the types of states this machine will use</typeparam>
 public class StateMachine<EState> where EState : System.Enum
 {
+
     AbsState<EState> _currentState;
-    public AbsState<EState> CurrentState {  get { return _currentState; } }
+    public AbsState<EState> CurrentState { get { return _currentState; } }
 
     public void Update() {
         _currentState.Update();
