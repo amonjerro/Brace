@@ -34,6 +34,9 @@ public class CharacterInterface : MonoBehaviour
     [Tooltip("Which health bar to assign to this player")]
     HealthBarController playerHealthBar;
 
+    [SerializeField]
+    DebugInputBuffer inputDebugger;
+
 
     // On start, this interface sets the status of the players based on incoming information
     void Start()
@@ -49,5 +52,6 @@ public class CharacterInterface : MonoBehaviour
             controller.SetStrategy(aiType);
         }
         createdCharacter.SetHealthBarController(playerHealthBar);
+        createdCharacter.SetInputBufferDebugger(inputDebugger);
     }
 }

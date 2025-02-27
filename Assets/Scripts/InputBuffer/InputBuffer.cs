@@ -4,14 +4,15 @@ namespace InputManagement {
     public class InputBuffer
     {
         int bufferLength;
-        int duration;
+        float inputDuration;
         InputMessage activeMessage;
         Queue<InputBufferItem> inputQueue;
 
-        public InputBuffer(int duration, int length)
+        public InputBuffer(float duration, int length)
         {
             bufferLength = length;
-            this.duration = duration;
+            inputDuration = duration;
+            inputQueue = new Queue<InputBufferItem>();
         }
 
         public InputBufferItem Push(InputBufferItem item)
@@ -43,6 +44,10 @@ namespace InputManagement {
         public void SetActiveConsumed()
         {
             activeMessage.consumed = true;
+        }
+
+        public Queue<InputBufferItem> GetInputQueue() { 
+            return inputQueue;
         }
     }
 }

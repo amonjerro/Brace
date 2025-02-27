@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using InputManagement;
+using System;
 
 public class Character : MonoBehaviour
 { 
@@ -13,10 +14,18 @@ public class Character : MonoBehaviour
     [SerializeField]
     bool isFlipped;
 
+    [SerializeField]
+    float bufferDuration;
+
+    [SerializeField]
+    int bufferSize;
+
     HealthBarController healthBarController;
     InputBuffer inputBuffer;
+    InputBufferItem bufferItem;
     StateMachine<CharacterStates> stateMachine;
-    
+    DebugInputBuffer inputBufferDebug;
+
     // Base values
     Vector3 forward3;
     float originalYPosition;
@@ -51,12 +60,21 @@ public class Character : MonoBehaviour
             forward3 *= -1;
         }
         originalYPosition = transform.position.y;
+        inputBuffer = new InputBuffer(bufferDuration, bufferSize);
+        bufferItem = new InputBufferItem();
     }
 
     private void Update()
     {
         UpdateTimersAndUI();
+        inputBufferDebug.Print(inputBuffer);
 
+        //Input Buffer logic
+        inputBuffer.Push(bufferItem);
+        bufferItem = new InputBufferItem();
+
+
+        // The following all needs to be replaced with state machine logic
         // Jump Update
         if (bIsGrounded)
         {
@@ -70,6 +88,8 @@ public class Character : MonoBehaviour
             bIsGrounded = true;
             transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
         }
+
+        
     }
     
     // Utility methods //
@@ -83,6 +103,11 @@ public class Character : MonoBehaviour
     {
         healthBarController = controller;
     }
+
+    public void SetInputBufferDebugger(DebugInputBuffer debugger)
+    {
+        inputBufferDebug = debugger;
+    }    
 
     // Updates all cooldowns and informs the UI of any relevant changes
     public void UpdateTimersAndUI()
@@ -133,6 +158,9 @@ public class Character : MonoBehaviour
     // Handle Player Input // 
     private void OnAttack(InputValue input)
     {
+        InputMessage im = new InputMessage(EInput.Fireball);
+        bufferItem.AddInput(im);
+
         // Ignore input while cooldown up or is blocking
         if (attackCooldown > 0 || bBlockIsPressed)
         {
@@ -148,6 +176,8 @@ public class Character : MonoBehaviour
 
     private void OnBlock(InputValue input)
     {
+        InputMessage im = new InputMessage(EInput.Block);
+        bufferItem.AddInput(im);
         // Ignore input while cooldown up
         if (blockCooldownTimer > 0)
         {
@@ -190,6 +220,8 @@ public class Character : MonoBehaviour
 
     private void OnJump(InputValue input)
     {
+        InputMessage im = new InputMessage(EInput.Jump);
+        bufferItem.AddInput(im);
         if (bIsGrounded) { 
             bIsGrounded = false;
             jumpTimer = 0;

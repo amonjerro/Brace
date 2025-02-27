@@ -10,6 +10,16 @@ namespace InputManagement{
     {
         public EInput actionType;
         public bool consumed;
+
+        public InputMessage(EInput input)
+        {
+            actionType = input;
+        }
+
+
+        public override string ToString() {  
+            return $"{actionType.ToString()} C:{consumed.ToString()} ";
+        }
     }
 }
 
