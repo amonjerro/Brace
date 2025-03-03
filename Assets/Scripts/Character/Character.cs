@@ -30,7 +30,8 @@ public class Character : MonoBehaviour
     Vector3 forward3;
     float originalYPosition;
     BulletPool bulletPool;
-    bool bIsGrounded = true;
+    bool _bIsGrounded = true;
+    public bool IsGrounded {  get { return _bIsGrounded; } set { _bIsGrounded = value; } }
     bool bCanBeDamaged = true;
     bool bBlockIsPressed = false;
 
@@ -76,7 +77,7 @@ public class Character : MonoBehaviour
 
         // The following all needs to be replaced with state machine logic
         // Jump Update
-        if (bIsGrounded)
+        if (_bIsGrounded)
         {
             return;
         }
@@ -85,7 +86,7 @@ public class Character : MonoBehaviour
 
         if (jumpTimer > CharacterData.characterParameters.jumpDuration)
         {
-            bIsGrounded = true;
+            _bIsGrounded = true;
             transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
         }
 
@@ -222,8 +223,8 @@ public class Character : MonoBehaviour
     {
         InputMessage im = new InputMessage(EInput.Jump);
         bufferItem.AddInput(im);
-        if (bIsGrounded) { 
-            bIsGrounded = false;
+        if (_bIsGrounded) { 
+            _bIsGrounded = false;
             jumpTimer = 0;
         }
     }

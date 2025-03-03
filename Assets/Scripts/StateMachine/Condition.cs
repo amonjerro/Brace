@@ -4,10 +4,11 @@ using UnityEngine;
 // Conditions for the state machine transitions
 public abstract class Condition
 {
+    public abstract void Reset();
     public abstract bool Test();
 }
 
-public abstract class AbsValueCondition<T> : Condition where T : IComparable<T>
+public abstract class AbsValueCondition<T> : Condition where T : IComparable
 {
     protected T ConditionValue;
     public void SetValue(T value)
@@ -17,7 +18,7 @@ public abstract class AbsValueCondition<T> : Condition where T : IComparable<T>
 }
 
 // Evaluation Conditions
-public class WithinRangeCondition<T> : AbsValueCondition<T> where T : IComparable<T>
+public class WithinRangeCondition<T> : AbsValueCondition<T> where T : IComparable
 {
     T MinValue;
     T MaxValue;
@@ -33,9 +34,14 @@ public class WithinRangeCondition<T> : AbsValueCondition<T> where T : IComparabl
         bool lessThanMax = ConditionValue.CompareTo(MaxValue) <= 0;
         return greaterThanMin && lessThanMax;
     }
+
+    public override void Reset()
+    {
+        ConditionValue = default(T);
+    }
 }
 
-public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable<T>
+public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable
 {
     T ExpectedValue;
 
@@ -48,6 +54,10 @@ public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable<T>
     {
         return ConditionValue.Equals(ExpectedValue);
     }
+
+    public override void Reset() { 
+        ConditionValue = default(T);
+    }
 }
 
 // Compound conditions types
@@ -55,10 +65,21 @@ public class AndCondition : Condition
 {
     Condition ConditionA;
     Condition ConditionB;
+    public AndCondition(Condition conditionA, Condition conditionB)
+    {
+        ConditionA = conditionA;
+        ConditionB = conditionB;
+    }
+
 
     public override bool Test()
     {
         return ConditionA.Test() && ConditionB.Test();
+    }
+
+    public override void Reset() {
+        ConditionA.Reset();
+        ConditionB.Reset();
     }
 }
 
@@ -70,6 +91,10 @@ public class NotCondition : Condition
     {
         return !ConditionA.Test();
     }
+
+    public override void Reset() {
+        ConditionA.Reset();
+    }
 }
 
 public class OrCondition : Condition
@@ -80,5 +105,10 @@ public class OrCondition : Condition
     public override bool Test()
     {
         return ConditionA.Test() || ConditionB.Test();
+    }
+
+    public override void Reset() {
+        ConditionA.Reset();
+        ConditionB.Reset();
     }
 }

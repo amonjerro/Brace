@@ -22,7 +22,7 @@ public class StateMachine<EState> where EState : System.Enum
                 break;
             }
         }
-        //Debug.Log(_currentState.ToString());
+
     }
 
     /// <summary>
