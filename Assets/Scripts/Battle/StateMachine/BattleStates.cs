@@ -9,11 +9,11 @@ public class CountdownState : AbsState<GameStates>
     WithinRangeCondition<float> countdownCondition;
     public CountdownState()
     {
-        transitions = new List<Transition<GameStates>>();
+        transitions = new Dictionary<GameStates,Transition<GameStates>>();
         Transition<GameStates> toStart = new Transition<GameStates>();
         countdownCondition = new WithinRangeCondition<float>(2.99f, 3.01f);
         toStart.SetCondition(countdownCondition);
-        transitions.Add(toStart);
+        transitions.Add(GameStates.Active,toStart);
         stateValue = GameStates.Countdown;
     }
 
@@ -46,11 +46,11 @@ public class ActiveGameplayState : AbsState<GameStates>
     EqualsCondition<bool> gameEndCondition;
     public ActiveGameplayState()
     {
-        transitions = new List<Transition<GameStates>>();
+        transitions = new Dictionary<GameStates, Transition<GameStates>>();
         Transition<GameStates> toEnd = new Transition<GameStates>();
         gameEndCondition = new EqualsCondition<bool>(true);
         toEnd.SetCondition(gameEndCondition);
-        transitions.Add(toEnd);
+        transitions.Add(GameStates.Over, toEnd);
         stateValue = GameStates.Active;
 
     }
@@ -78,7 +78,7 @@ public class GameOverState : AbsState<GameStates>
 {
     public GameOverState()
     {
-        transitions = new List<Transition<GameStates>>();
+        transitions = new Dictionary<GameStates, Transition<GameStates>>();
         stateValue = GameStates.Over;
     }
     protected override void OnEnter()

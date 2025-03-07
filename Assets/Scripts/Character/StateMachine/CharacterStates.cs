@@ -12,7 +12,7 @@ public abstract class PlayerState : AbsState<CharacterStates>{
     public PlayerState()
     {
         activeMessage = null;
-        transitions = new List<Transition<CharacterStates>>();
+        transitions = new Dictionary<CharacterStates, Transition<CharacterStates>>();
     }
 
     public void SetMessage(InputMessage m)
@@ -20,7 +20,7 @@ public abstract class PlayerState : AbsState<CharacterStates>{
         activeMessage = m;
     }
 
-    public void SetCharacter(Character c)
+    public virtual void SetCharacter(Character c)
     {
         characterReference = c;
     }
@@ -47,19 +47,19 @@ public class NeutralState : PlayerState
         // Transitions
         Transition<CharacterStates> toJumpTransition = new Transition<CharacterStates>();
         toJumpTransition.SetCondition(toJumpCondition);
-        Transition<CharacterStates> toBlockTransition = new Transition<CharacterStates>();
-        toBlockTransition.SetCondition(toBlockCondition);
+        Transition<CharacterStates> toParryTransition = new Transition<CharacterStates>();
+        toParryTransition.SetCondition(toBlockCondition);
         Transition<CharacterStates> toAttackTransition = new Transition<CharacterStates>();
         toAttackTransition.SetCondition(toAttackingCondition);
 
-        transitions.Add(toAttackTransition);
-        transitions.Add(toJumpTransition);
-        transitions.Add(toBlockTransition);
+        transitions.Add(CharacterStates.Attacking,toAttackTransition);
+        transitions.Add(CharacterStates.Jumping, toJumpTransition);
+        transitions.Add(CharacterStates.Parrying, toParryTransition);
     }
 
     protected override void OnEnter()
     {
-        characterReference.IsGrounded = true;
+        characterReference.ResetHeight();
         Flush();
     }
 
@@ -75,8 +75,8 @@ public class NeutralState : PlayerState
             return;
         }
 
-        foreach (Transition<CharacterStates> transition in transitions) {
-            EqualsCondition<EInput> condition = (EqualsCondition<EInput>)transition.GetCondition();
+        foreach (KeyValuePair<CharacterStates,Transition<CharacterStates>> kvp in transitions) {
+            EqualsCondition<EInput> condition = (EqualsCondition<EInput>)kvp.Value.GetCondition();
             condition.SetValue(activeMessage.actionType);
         }
 
@@ -88,16 +88,20 @@ public class NeutralState : PlayerState
 public class AttackingState : PlayerState
 {
     float timer = 0;
-    WithinRangeCondition<float> toNeutral;
-    public AttackingState(float min, float max) : base() 
+    GreaterThanCondition<float> toNeutral;
+    public AttackingState() : base() 
     {
         stateValue = CharacterStates.Attacking;
+    }
 
-        toNeutral = new WithinRangeCondition<float>(min, max);
+    public override void SetCharacter(Character c)
+    {
+        base.SetCharacter(c);
+        float attackDuration = c.GetAttackDuration();
+        toNeutral = new GreaterThanCondition<float>(attackDuration);
         Transition<CharacterStates> toNeutralTransition = new Transition<CharacterStates>();
         toNeutralTransition.SetCondition(toNeutral);
-
-        transitions.Add(toNeutralTransition);
+        transitions.Add(CharacterStates.Neutral, toNeutralTransition);
     }
 
     protected override void OnEnter()
@@ -105,6 +109,7 @@ public class AttackingState : PlayerState
         Flush();
         timer = 0;
         toNeutral.SetValue(timer);
+        characterReference.ThrowFireball();
     }
 
     protected override void OnExit()
@@ -133,7 +138,7 @@ public class BlockingState : PlayerState
         Transition<CharacterStates> backToNeutral = new Transition<CharacterStates>();
         backToNeutral.SetCondition(condition);
 
-        transitions.Add(backToNeutral);
+        transitions.Add(CharacterStates.Neutral, backToNeutral);
     }
     protected override void OnEnter()
     {
@@ -163,30 +168,37 @@ public class ParryingState : PlayerState
 {
     EqualsCondition<EInput> inputCondition;
     EqualsCondition<bool> releaseCondition;
-    WithinRangeCondition<float> withinRangeCondition;
+    GreaterThanCondition<float> greaterThanCondition;
     float timer = 0;
-    public ParryingState(float parryWindow) : base()
+    public ParryingState() : base()
     {
         // Conditions
         stateValue = CharacterStates.Parrying;
         inputCondition = new EqualsCondition<EInput>(EInput.Block);
         releaseCondition = new EqualsCondition<bool>(true);
         AndCondition andCond = new AndCondition(inputCondition, releaseCondition);
-        withinRangeCondition = new WithinRangeCondition<float>(parryWindow - 0.01f, parryWindow + 0.01f);
+        
 
         // Transitions
         Transition<CharacterStates> toNeutral = new Transition<CharacterStates>();
         toNeutral.SetCondition(andCond);
-        Transition<CharacterStates> toBlocking = new Transition<CharacterStates>();
-        toBlocking.SetCondition(withinRangeCondition);
-
-        transitions.Add(toNeutral);
-        transitions.Add(toBlocking);
-        
+        transitions.Add(CharacterStates.Neutral, toNeutral);
     }
+
+    public override void SetCharacter(Character c)
+    {
+        base.SetCharacter(c);
+        greaterThanCondition = new GreaterThanCondition<float>(c.GetParryWindow());
+        Transition<CharacterStates> toBlocking = new Transition<CharacterStates>();
+        toBlocking.SetCondition(greaterThanCondition);
+        transitions.Add(CharacterStates.Blocking, toBlocking);
+    }
+
     protected override void OnEnter()
     {
+        // Play some animation
 
+        // Play some sound?
     }
 
     protected override void OnExit()
@@ -197,7 +209,7 @@ public class ParryingState : PlayerState
     protected override void OnUpdate()
     {
         timer += Time.deltaTime;
-        withinRangeCondition.SetValue(timer);
+        greaterThanCondition.SetValue(timer);
 
         // If no input is being processed return
         if (activeMessage == null) {
@@ -217,6 +229,9 @@ public class JumpingState : PlayerState
 {
     EqualsCondition<bool> groundCondition;
     EqualsCondition<EInput> jumpCondition;
+
+    float timer;
+
     public JumpingState() : base()
     {
         stateValue = CharacterStates.Jumping;
@@ -228,27 +243,39 @@ public class JumpingState : PlayerState
         Transition<CharacterStates> toDownJumping = new Transition<CharacterStates>();
         toDownJumping.SetCondition(jumpCondition);
 
-        transitions.Add(toNeutral);
-        transitions.Add(toDownJumping);
+        transitions.Add(CharacterStates.Neutral, toNeutral);
+        transitions.Add(CharacterStates.DownJumping, toDownJumping);
 
     }
     protected override void OnEnter()
     {
+        timer = 0;
 
+        // Call Animation
+
+        // Play sound
     }
 
     protected override void OnExit()
     {
+        Flush();
 
+        // Create landing particle system on grounded
     }
 
     protected override void OnUpdate()
     {
+        // Update the characters vertical position
+        timer += Time.deltaTime;
+        characterReference.HandleJumpUpdate(timer);
+
+        // Check for grounded
+        groundCondition.SetValue(characterReference.IsGrounded);
+
+        // If down jumping called, execute it
         if (activeMessage == null) {
             return;
         }
-
-        groundCondition.SetValue(characterReference.IsGrounded);
         jumpCondition.SetValue(activeMessage.actionType);
 
         Flush();
@@ -259,26 +286,29 @@ public class JumpingState : PlayerState
 public class DownJumpingState : PlayerState
 {
     EqualsCondition<bool> groundCondition;
+    float timer;
     public DownJumpingState(): base()
     {
         stateValue = CharacterStates.DownJumping;
         groundCondition = new EqualsCondition<bool>(true);
         Transition<CharacterStates> transition = new Transition<CharacterStates>();
         transition.SetCondition(groundCondition);
-        transitions.Add(transition);
+        transitions.Add(CharacterStates.Neutral, transition);
     }
     protected override void OnEnter()
     {
-
+        timer = 0;
     }
 
     protected override void OnExit()
     {
-
+        // Create a particle system to show landing
     }
 
     protected override void OnUpdate()
     {
+        timer += Time.deltaTime;
+        characterReference.HandleDownJumpUpdate(timer);
         groundCondition.SetValue(characterReference.IsGrounded);
     }
 }

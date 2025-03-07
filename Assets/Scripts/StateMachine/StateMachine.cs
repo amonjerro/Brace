@@ -1,4 +1,4 @@
-using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Generic state machine for the various game elements that will require one
@@ -12,12 +12,12 @@ public class StateMachine<EState> where EState : System.Enum
 
     public void Update() {
         _currentState.Update();
-        foreach(Transition<EState> transition in _currentState.transitions)
+        foreach(KeyValuePair<EState,Transition<EState>> kvp in _currentState.transitions)
         {
-            if (transition.IsTriggered())
+            if (kvp.Value.IsTriggered())
             {
                 _currentState.Exit();
-                _currentState = transition.TargetState;
+                _currentState = kvp.Value.TargetState;
                 _currentState.Enter();
                 break;
             }

@@ -30,8 +30,8 @@ public class Character : MonoBehaviour
     Vector3 forward3;
     float originalYPosition;
     BulletPool bulletPool;
-    bool _bIsGrounded = true;
-    public bool IsGrounded {  get { return _bIsGrounded; } set { _bIsGrounded = value; } }
+   
+    public bool IsGrounded {  get { return transform.position.y <= originalYPosition; } }
     bool bCanBeDamaged = true;
     bool bBlockIsPressed = false;
 
@@ -54,7 +54,6 @@ public class Character : MonoBehaviour
     // Unity lifecycle // 
     private void Start()
     {
-
         bulletPool = FindAnyObjectByType<BulletPool>();
         forward3 = transform.right;
         if (isFlipped) {
@@ -63,6 +62,50 @@ public class Character : MonoBehaviour
         originalYPosition = transform.position.y;
         inputBuffer = new InputBuffer(bufferDuration, bufferSize);
         bufferItem = new InputBufferItem();
+        SetupStateMachine();
+    }
+
+    // State machine setup
+    public void SetupStateMachine()
+    {
+        stateMachine = new StateMachine<CharacterStates>();
+        
+        // Create states
+        NeutralState neutral = new NeutralState();
+        neutral.SetCharacter(this);
+
+        AttackingState attacking = new AttackingState();
+        attacking.SetCharacter(this);
+
+        JumpingState jumping = new JumpingState();
+        jumping.SetCharacter(this);
+
+        DownJumpingState down = new DownJumpingState();
+        down.SetCharacter(this);
+
+        ParryingState parry = new ParryingState();
+        parry.SetCharacter(this);
+
+        BlockingState blocking = new BlockingState();
+        blocking.SetCharacter(this);
+
+        // Set up transitions
+        neutral.transitions[CharacterStates.Attacking].TargetState = attacking;
+        neutral.transitions[CharacterStates.Jumping].TargetState = jumping;
+        neutral.transitions[CharacterStates.Parrying].TargetState = parry;
+
+        attacking.transitions[CharacterStates.Neutral].TargetState = neutral;
+        
+        jumping.transitions[CharacterStates.DownJumping].TargetState = down;
+        jumping.transitions[CharacterStates.Neutral].TargetState = neutral;
+        down.transitions[CharacterStates.Neutral].TargetState = neutral;
+
+        parry.transitions[CharacterStates.Blocking].TargetState = blocking;
+        parry.transitions[CharacterStates.Neutral].TargetState = neutral;
+        blocking.transitions[CharacterStates.Neutral].TargetState = neutral;
+
+        // Set ground state
+        stateMachine.SetStartingState(neutral);
     }
 
     private void Update()
@@ -72,29 +115,49 @@ public class Character : MonoBehaviour
 
         //Input Buffer logic
         inputBuffer.Push(bufferItem);
-        bufferItem = new InputBufferItem();
-
-
-        // The following all needs to be replaced with state machine logic
-        // Jump Update
-        if (_bIsGrounded)
-        {
-            return;
-        }
-        jumpTimer += Time.deltaTime;
-        transform.position = new Vector3(transform.position.x, ParabolicPosition(), transform.position.z);
-
-        if (jumpTimer > CharacterData.characterParameters.jumpDuration)
-        {
-            _bIsGrounded = true;
-            transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
-        }
-
+        PlayerState s = (PlayerState)stateMachine.CurrentState;
         
+        // s.SetMessage(); TODO - MAKE THIS WORK
+        
+        stateMachine.Update();
+
+
+        bufferItem = new InputBufferItem();
     }
+
+    /// <summary>
+    /// Allows the state machine to update this object's vertical position
+    /// </summary>
+    /// <param name="value">The time parameter to pass</param>
+    public void HandleJumpUpdate(float jumpTimer)
+    {
+        transform.position = new Vector3(transform.position.x, ParabolicPosition(jumpTimer), transform.position.z);
+    }
+
+    public void HandleDownJumpUpdate(float newYValue)
+    {
+        transform.position = new Vector3(transform.position.x, newYValue, transform.position.z);
+    }
+
+    public void ResetHeight()
+    {
+        transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
+    }
+
+    public float GetAttackDuration()
+    {
+        return CharacterData.characterParameters.attackDuration;
+    }
+
+    public float GetParryWindow()
+    {
+        return CharacterData.characterParameters.parryWindow;
+    }
+
+    
     
     // Utility methods //
-    float ParabolicPosition()
+    float ParabolicPosition(float value)
     {
         float t = jumpTimer / CharacterData.characterParameters.jumpDuration;
         return CharacterData.characterParameters.jumpHeight * ( -4 * t * t + 4 * t) + originalYPosition;
@@ -108,10 +171,10 @@ public class Character : MonoBehaviour
     public void SetInputBufferDebugger(DebugInputBuffer debugger)
     {
         inputBufferDebug = debugger;
-    }    
+    }
 
     // Updates all cooldowns and informs the UI of any relevant changes
-    public void UpdateTimersAndUI()
+    private void UpdateTimersAndUI()
     {
         attackCooldown -= Time.deltaTime * attackCooldownSpeed;
         blockTimer += Time.deltaTime * blockUptickSpeed;
@@ -161,12 +224,34 @@ public class Character : MonoBehaviour
     {
         InputMessage im = new InputMessage(EInput.Fireball);
         bufferItem.AddInput(im);
-
-        // Ignore input while cooldown up or is blocking
-        if (attackCooldown > 0 || bBlockIsPressed)
+    }
+    private void OnBlock(InputValue input)
+    {
+        if (input.isPressed)
         {
-            return;
+            BeginBlock();
         }
+        else
+        {
+            ReleaseBlock();
+        }
+    }
+
+    private void OnJump(InputValue input)
+    {
+        InputMessage im = new InputMessage(EInput.Jump);
+        bufferItem.AddInput(im);
+        if (IsGrounded)
+        {
+            jumpTimer = 0;
+        }
+    }
+
+
+    // Input specific actions //
+
+    public void ThrowFireball()
+    {
         Bullet b = bulletPool.GetBullet().GetComponent<Bullet>();
         b.transform.position = transform.position + forward3 + (forward3 * 0.1f);
         b.Launch(CharacterData.characterParameters.bulletParams, forward3);
@@ -174,61 +259,22 @@ public class Character : MonoBehaviour
         attackCooldownSpeed = 1.0f;
     }
 
-
-    private void OnBlock(InputValue input)
-    {
-        InputMessage im = new InputMessage(EInput.Block);
-        bufferItem.AddInput(im);
-        // Ignore input while cooldown up
-        if (blockCooldownTimer > 0)
-        {
-            return;
-        }
-
-        if (input.isPressed)
-        {
-            BeginBlock();
-        } else
-        {
-            if (!bBlockIsPressed)
-            {
-                return;
-            }
-            ReleaseBlock();
-        }
-    }
-
     // What to do when the player begins blocking
     // TODO - research how to do input buffering to prevent players from feeling that they couldn't block
     private void BeginBlock()
     {
-        
-        blockUptickSpeed = 1.0f;
-        BlockingField.SetActive(true);
-        bBlockIsPressed = true;
+        InputMessage im = new InputMessage(EInput.Block);
+        im.isRelease = false;
+        bufferItem.AddInput(im);
     }
 
     // What to do when the player stops blocking
     private void ReleaseBlock()
     {
-        blockTimer = 0;
-        blockUptickSpeed = 0.0f;
-        blockCooldownSpeed = 1.0f;
-        blockCooldownTimer = CharacterData.characterParameters.blockCooldown;
-        BlockingField.SetActive(false);
-        bBlockIsPressed = false;
-    }
-
-    private void OnJump(InputValue input)
-    {
-        InputMessage im = new InputMessage(EInput.Jump);
+        InputMessage im = new InputMessage(EInput.Block);
+        im.isRelease = true;
         bufferItem.AddInput(im);
-        if (_bIsGrounded) { 
-            _bIsGrounded = false;
-            jumpTimer = 0;
-        }
     }
-
 
     
 }

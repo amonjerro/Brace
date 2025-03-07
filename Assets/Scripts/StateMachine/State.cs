@@ -19,7 +19,7 @@ public enum GameStates
 public abstract class AbsState<EState> where EState : System.Enum
 {
     protected EState stateValue;
-    public List<Transition<EState>> transitions;
+    public Dictionary<EState,Transition<EState>> transitions;
     protected abstract void OnUpdate();
     protected abstract void OnEnter();
     protected abstract void OnExit();

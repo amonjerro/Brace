@@ -15,6 +15,11 @@ public abstract class AbsValueCondition<T> : Condition where T : IComparable
     {
         ConditionValue = value;
     }
+
+    public override void Reset()
+    {
+        ConditionValue = default(T);
+    }
 }
 
 // Evaluation Conditions
@@ -34,10 +39,20 @@ public class WithinRangeCondition<T> : AbsValueCondition<T> where T : IComparabl
         bool lessThanMax = ConditionValue.CompareTo(MaxValue) <= 0;
         return greaterThanMin && lessThanMax;
     }
+}
 
-    public override void Reset()
+public class GreaterThanCondition<T> : AbsValueCondition<T> where T : IComparable
+{
+    T Threshold;
+
+    public GreaterThanCondition(T threshold)
     {
-        ConditionValue = default(T);
+        Threshold = threshold;
+    }
+
+    public override bool Test()
+    {
+        return ConditionValue.CompareTo(Threshold) >= 0;
     }
 }
 
@@ -53,10 +68,6 @@ public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable
     public override bool Test()
     {
         return ConditionValue.Equals(ExpectedValue);
-    }
-
-    public override void Reset() { 
-        ConditionValue = default(T);
     }
 }
 

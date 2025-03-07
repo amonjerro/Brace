@@ -27,8 +27,8 @@ public class BattleManager : MonoBehaviour
         CountdownState countdownState = new CountdownState();
         ActiveGameplayState activeGameplayState = new ActiveGameplayState();
         GameOverState gameOverState = new GameOverState();
-        countdownState.transitions[0].TargetState = activeGameplayState;
-        activeGameplayState.transitions[0].TargetState = gameOverState;
+        countdownState.transitions[GameStates.Active].TargetState = activeGameplayState;
+        activeGameplayState.transitions[GameStates.Over].TargetState = gameOverState;
         
         // Set the root
         stateMachine.SetStartingState(countdownState);
