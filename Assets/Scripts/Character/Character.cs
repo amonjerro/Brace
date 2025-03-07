@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using InputManagement;
-using System;
 
 public class Character : MonoBehaviour
 { 
@@ -33,7 +32,6 @@ public class Character : MonoBehaviour
    
     public bool IsGrounded {  get { return transform.position.y <= originalYPosition; } }
     bool bCanBeDamaged = true;
-    bool bBlockIsPressed = false;
 
     // Jump duration modifier
     float jumpTimer = 0;
@@ -134,16 +132,27 @@ public class Character : MonoBehaviour
         transform.position = new Vector3(transform.position.x, ParabolicPosition(jumpTimer), transform.position.z);
     }
 
+    /// <summary>
+    /// Allows the state machine to update this object's vertical position with regards to down jumping
+    /// </summary>
+    /// <param name="newYValue">The new Y value for this object</param>
     public void HandleDownJumpUpdate(float newYValue)
     {
         transform.position = new Vector3(transform.position.x, newYValue, transform.position.z);
     }
 
+    /// <summary>
+    /// Resets this object's height to the original value
+    /// </summary>
     public void ResetHeight()
     {
         transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
     }
 
+    /// <summary>
+    /// Provide access to the duration in seconds of the attack animation
+    /// </summary>
+    /// <returns></returns>
     public float GetAttackDuration()
     {
         return CharacterData.characterParameters.attackDuration;

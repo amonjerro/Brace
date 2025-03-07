@@ -56,7 +56,6 @@ public class ActiveGameplayState : AbsState<GameStates>
     }
     protected override void OnEnter() {
         BattleManager.gameOver += ListenToGameOver;
-        Debug.Log("Entered Active Gameplay State");
     }
     protected override void OnExit()
     {
