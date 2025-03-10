@@ -15,4 +15,9 @@ public class Transition<EState> where EState : System.Enum
     }
 
     public Condition GetCondition() { return condition; }
+
+    public void ResetCondition()
+    {
+        condition.Reset();
+    }
 }

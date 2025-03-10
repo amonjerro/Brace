@@ -11,6 +11,7 @@ namespace InputManagement {
         static Dictionary<EInput, int> priorities;
 
         public bool PushFlag { get; private set; }
+        public bool BufferPaused { get; set; }
 
         //** Static helper messages **//
         public static int GetInputPriority(EInput type)
@@ -35,6 +36,11 @@ namespace InputManagement {
         // Update the state of the buffer
         public void Update(float deltaTime)
         {
+            if (BufferPaused)
+            {
+                return;
+            }
+
             bufferCounter += deltaTime;
 
             // Move the buffer
@@ -90,6 +96,7 @@ namespace InputManagement {
                     ibi.Acknowledged = true;
                     continue;
                 }
+
                 // Test the buffer itself to see if this action automatically gets set
                 if (activeMessage == null) { 
                     activeMessage = contenderAction;

@@ -38,6 +38,11 @@ public abstract class AbsState<EState> where EState : System.Enum
         OnExit(); 
     }
 
+    public EState GetStateValue()
+    {
+        return stateValue;
+    }
+
     public override string ToString()
     {
         return stateValue.ToString();

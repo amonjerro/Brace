@@ -23,6 +23,9 @@ public class Character : MonoBehaviour
     [SerializeField]
     int bufferSize;
 
+    [SerializeField]
+    CharacterStates currentState;
+
     // Internals
     HealthBarController healthBarController;
     InputBuffer inputBuffer;
@@ -122,6 +125,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
+        currentState = stateMachine.GetCurrentState();
         UpdateTimersAndUI();
         inputBufferDebug.Print(inputBuffer);
         inputBuffer.Update(Time.deltaTime);
@@ -138,7 +142,7 @@ public class Character : MonoBehaviour
         if (inputBuffer.GetActiveMessage() != null)
         {
             PlayerState s = (PlayerState)stateMachine.CurrentState;
-            s.SetMessage(inputBuffer.GetActiveMessage());    
+            s.SetMessage(inputBuffer.GetActiveMessage());
         }
 
         stateMachine.Update();

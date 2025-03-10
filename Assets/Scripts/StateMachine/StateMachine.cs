@@ -33,4 +33,9 @@ public class StateMachine<EState> where EState : System.Enum
     {
         _currentState = state;
     }
+
+    public EState GetCurrentState()
+    {
+        return _currentState.GetStateValue();
+    }
 }

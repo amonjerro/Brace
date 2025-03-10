@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using InputManagement;
@@ -28,6 +29,10 @@ public abstract class PlayerState : AbsState<CharacterStates>{
     public void Flush()
     {
         activeMessage = null;
+        foreach(Transition<CharacterStates> transition in transitions.Values)
+        {
+            transition.ResetCondition();
+        }
     }
 }
 
@@ -108,7 +113,6 @@ public class AttackingState : PlayerState
 
     protected override void OnEnter()
     {
-        Flush();
         timer = 0;
         toNeutral.SetValue(timer);
         characterReference.ThrowFireball();
@@ -144,7 +148,7 @@ public class BlockingState : PlayerState
     }
     protected override void OnEnter()
     {
-        Flush();
+
     }
 
     protected override void OnExit()
