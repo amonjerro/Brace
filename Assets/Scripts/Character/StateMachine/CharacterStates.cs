@@ -64,7 +64,11 @@ public class NeutralState : PlayerState
     }
 
     protected override void OnExit()
-    {
+   {
+        if (activeMessage != null)
+        {
+            activeMessage.consumed = true;
+        }
         Flush();
     }
 
@@ -79,8 +83,6 @@ public class NeutralState : PlayerState
             EqualsCondition<EInput> condition = (EqualsCondition<EInput>)kvp.Value.GetCondition();
             condition.SetValue(activeMessage.actionType);
         }
-
-        Flush();
     }
 }
 
@@ -147,6 +149,7 @@ public class BlockingState : PlayerState
 
     protected override void OnExit()
     {
+        activeMessage.consumed = true;
         Flush();
     }
 
@@ -158,8 +161,6 @@ public class BlockingState : PlayerState
 
         inputCondition.SetValue(activeMessage.actionType);
         releaseCondition.SetValue(activeMessage.isRelease);
-
-        Flush();
     }
 }
 
@@ -203,7 +204,11 @@ public class ParryingState : PlayerState
 
     protected override void OnExit()
     {
-
+        if (activeMessage != null)
+        {
+            activeMessage.consumed = true;
+        }
+        Flush();
     }
 
     protected override void OnUpdate()
@@ -218,8 +223,6 @@ public class ParryingState : PlayerState
 
         inputCondition.SetValue(activeMessage.actionType);
         releaseCondition.SetValue(activeMessage.isRelease);
-        
-        Flush();
     }
 }
 
@@ -258,6 +261,10 @@ public class JumpingState : PlayerState
 
     protected override void OnExit()
     {
+        if (activeMessage != null)
+        {
+            activeMessage.consumed = true;
+        }
         Flush();
 
         // Create landing particle system on grounded
@@ -278,7 +285,6 @@ public class JumpingState : PlayerState
         }
         jumpCondition.SetValue(activeMessage.actionType);
 
-        Flush();
     }
 }
 

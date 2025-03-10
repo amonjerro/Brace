@@ -3,7 +3,11 @@ using UnityEngine.InputSystem;
 using InputManagement;
 
 public class Character : MonoBehaviour
-{ 
+{
+    // Dependency Configurations
+    [SerializeField]
+    InputConfigSO InputConfig;
+
     [SerializeField]
     CharacterSO CharacterData;
 
@@ -19,6 +23,7 @@ public class Character : MonoBehaviour
     [SerializeField]
     int bufferSize;
 
+    // Internals
     HealthBarController healthBarController;
     InputBuffer inputBuffer;
     InputBufferItem bufferItem;
@@ -29,12 +34,9 @@ public class Character : MonoBehaviour
     Vector3 forward3;
     float originalYPosition;
     BulletPool bulletPool;
-   
-    public bool IsGrounded {  get { return transform.position.y <= originalYPosition; } }
     bool bCanBeDamaged = true;
 
-    // Jump duration modifier
-    float jumpTimer = 0;
+    public bool IsGrounded {  get { return transform.position.y <= originalYPosition; } }
 
     // Timers for game actions
     float blockTimer = 0;
@@ -52,15 +54,27 @@ public class Character : MonoBehaviour
     // Unity lifecycle // 
     private void Start()
     {
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         bulletPool = FindAnyObjectByType<BulletPool>();
         forward3 = transform.right;
-        if (isFlipped) {
+        if (isFlipped)
+        {
             forward3 *= -1;
         }
         originalYPosition = transform.position.y;
+        ConfigureInputBuffer();
+        SetupStateMachine();
+    }
+
+    private void ConfigureInputBuffer()
+    {
+        InputBuffer.SetPriorities(InputConfig.MakePriorities());
         inputBuffer = new InputBuffer(bufferDuration, bufferSize);
         bufferItem = new InputBufferItem();
-        SetupStateMachine();
     }
 
     // State machine setup
@@ -110,17 +124,25 @@ public class Character : MonoBehaviour
     {
         UpdateTimersAndUI();
         inputBufferDebug.Print(inputBuffer);
+        inputBuffer.Update(Time.deltaTime);
 
         //Input Buffer logic
-        inputBuffer.Push(bufferItem);
-        PlayerState s = (PlayerState)stateMachine.CurrentState;
-        
-        // s.SetMessage(); TODO - MAKE THIS WORK
-        
+        if (inputBuffer.PushFlag)
+        {
+            inputBuffer.Push(bufferItem);
+            bufferItem = new InputBufferItem();
+        }
+        inputBuffer.UpdateActiveMessage();
+
+        // Pass the message to the state machine
+        if (inputBuffer.GetActiveMessage() != null)
+        {
+            PlayerState s = (PlayerState)stateMachine.CurrentState;
+            s.SetMessage(inputBuffer.GetActiveMessage());    
+        }
+
         stateMachine.Update();
-
-
-        bufferItem = new InputBufferItem();
+        
     }
 
     /// <summary>
@@ -138,7 +160,8 @@ public class Character : MonoBehaviour
     /// <param name="newYValue">The new Y value for this object</param>
     public void HandleDownJumpUpdate(float newYValue)
     {
-        transform.position = new Vector3(transform.position.x, newYValue, transform.position.z);
+        float adjustedValue = transform.position.y - newYValue;
+        transform.position = new Vector3(transform.position.x, adjustedValue, transform.position.z);
     }
 
     /// <summary>
@@ -168,7 +191,7 @@ public class Character : MonoBehaviour
     // Utility methods //
     float ParabolicPosition(float value)
     {
-        float t = jumpTimer / CharacterData.characterParameters.jumpDuration;
+        float t = value / CharacterData.characterParameters.jumpDuration;
         return CharacterData.characterParameters.jumpHeight * ( -4 * t * t + 4 * t) + originalYPosition;
     }
 
@@ -250,10 +273,6 @@ public class Character : MonoBehaviour
     {
         InputMessage im = new InputMessage(EInput.Jump);
         bufferItem.AddInput(im);
-        if (IsGrounded)
-        {
-            jumpTimer = 0;
-        }
     }
 
 

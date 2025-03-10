@@ -20,7 +20,6 @@ namespace InputManagement{
 
         }
 
-
         public override string ToString() {  
             return $"{actionType.ToString()} C:{consumed.ToString()} ";
         }

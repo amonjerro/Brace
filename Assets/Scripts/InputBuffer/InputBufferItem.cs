@@ -4,10 +4,46 @@ namespace InputManagement
     public class InputBufferItem
     {
         List<InputMessage> inputMessages;
+        InputMessage winningAction;
+        public bool Acknowledged {  get; set; }
+        public bool WinningActionSet { get { return winningAction != null; } }
 
         public InputBufferItem()
         {
             inputMessages = new List<InputMessage>();
+            winningAction = null;
+        }
+
+        // Winning action can return null
+        public InputMessage FindWinningAction()
+        {
+            if (WinningActionSet) { 
+                return winningAction;
+            }
+
+            int minPriority = 999;
+            int inputPriority = 999;
+            for(int i = 0; i < inputMessages.Count; i++)
+            {
+                // Avoid null references
+                if (inputMessages[i] == null)
+                {
+                    continue;
+                }
+
+                if (inputMessages[i].consumed)
+                {
+                    Acknowledged = true;
+                    break;
+                }
+
+                inputPriority = InputBuffer.GetInputPriority(inputMessages[i].actionType);
+                if (inputPriority < minPriority){
+                    minPriority = inputPriority;
+                    winningAction = inputMessages[i];
+                }
+            }
+            return winningAction;
         }
 
         public override string ToString()
