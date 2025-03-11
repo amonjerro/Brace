@@ -38,6 +38,10 @@ namespace InputManagement
                 }
 
                 inputPriority = InputBuffer.GetInputPriority(inputMessages[i].actionType);
+                if (inputMessages[i].isRelease)
+                {
+                    inputPriority -= 1;
+                }
                 if (inputPriority < minPriority){
                     minPriority = inputPriority;
                     winningAction = inputMessages[i];
@@ -50,7 +54,17 @@ namespace InputManagement
         {
             string s = "";
             foreach (InputMessage m in inputMessages) { 
-                s += m.ToString() + "/ ";
+                if (WinningActionSet)
+                {
+                    if (m == winningAction)
+                    {
+                        s += "<color=red>" + m.ToString() + "</color> /";
+                    }
+                    else
+                    {
+                        s += m.ToString() + " / ";
+                    }
+                }
             }
             return s;
         }

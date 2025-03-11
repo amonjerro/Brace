@@ -20,7 +20,6 @@ public class CountdownState : AbsState<GameStates>
     protected override void OnEnter()
     {
         // Trigger countdown UI
-        Debug.Log("Timer started");
 
         // Disable inputs
     }
@@ -28,7 +27,6 @@ public class CountdownState : AbsState<GameStates>
     protected override void OnExit()
     {
         // Remove countdown UI
-        Debug.Log("Timer Ended");
 
         // Enable inputs
     }

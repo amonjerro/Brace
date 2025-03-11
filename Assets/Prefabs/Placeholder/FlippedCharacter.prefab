@@ -312,10 +312,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputConfig: {fileID: 11400000, guid: 9505c82ad57d60f49a8612dca4b7b40c, type: 2}
   CharacterData: {fileID: 11400000, guid: 16c98da5913c9544586948fb021f3c72, type: 2}
-  BlockingField: {fileID: 2256607451010634687}
+  BlockingField: {fileID: 1433418557628284390}
   isFlipped: 1
   bufferDuration: 0.2
   bufferSize: 8
+  currentState: 0
 --- !u!61 &6924697691713441160
 BoxCollider2D:
   m_ObjectHideFlags: 0

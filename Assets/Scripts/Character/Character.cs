@@ -12,7 +12,7 @@ public class Character : MonoBehaviour
     CharacterSO CharacterData;
 
     [SerializeField]
-    GameObject BlockingField;
+    Shield BlockingField;
 
     [SerializeField]
     bool isFlipped;
@@ -86,22 +86,22 @@ public class Character : MonoBehaviour
         stateMachine = new StateMachine<CharacterStates>();
         
         // Create states
-        NeutralState neutral = new NeutralState();
+        NeutralState neutral = new NeutralState(stateMachine);
         neutral.SetCharacter(this);
 
-        AttackingState attacking = new AttackingState();
+        AttackingState attacking = new AttackingState(stateMachine);
         attacking.SetCharacter(this);
 
-        JumpingState jumping = new JumpingState();
+        JumpingState jumping = new JumpingState(stateMachine);
         jumping.SetCharacter(this);
 
-        DownJumpingState down = new DownJumpingState();
+        DownJumpingState down = new DownJumpingState(stateMachine);
         down.SetCharacter(this);
 
-        ParryingState parry = new ParryingState();
+        ParryingState parry = new ParryingState(stateMachine);
         parry.SetCharacter(this);
 
-        BlockingState blocking = new BlockingState();
+        BlockingState blocking = new BlockingState(stateMachine);
         blocking.SetCharacter(this);
 
         // Set up transitions
@@ -116,8 +116,6 @@ public class Character : MonoBehaviour
         down.transitions[CharacterStates.Neutral].TargetState = neutral;
 
         parry.transitions[CharacterStates.Blocking].TargetState = blocking;
-        parry.transitions[CharacterStates.Neutral].TargetState = neutral;
-        blocking.transitions[CharacterStates.Neutral].TargetState = neutral;
 
         // Set ground state
         stateMachine.SetStartingState(neutral);
@@ -231,12 +229,6 @@ public class Character : MonoBehaviour
 
     // Gameplay functions //
 
-    // Test whether the block still counts as a parry
-    public bool IsWithinParryWindow()
-    {
-        return blockTimer <= CharacterData.characterParameters.parryWindow;
-    }
-
     // Change the player's life total based on the damage they've taken.
     // Show feedback to the player that damage has been done
     public void TakeDamage(float value)
@@ -254,6 +246,32 @@ public class Character : MonoBehaviour
             ServiceLocator.Instance.GetService<BattleManager>().SetGameToOver();
         }
     }
+
+    public void ThrowFireball()
+    {
+        Bullet b = bulletPool.GetBullet().GetComponent<Bullet>();
+        b.transform.position = transform.position + forward3 + (forward3 * 0.1f);
+        b.Launch(CharacterData.characterParameters.bulletParams, forward3);
+        attackCooldown = CharacterData.characterParameters.shotCooldown;
+        attackCooldownSpeed = 1.0f;
+    }
+
+    // Handle Blocking //
+    public void EnableBlock()
+    {
+        BlockingField.gameObject.SetActive(true);
+    }
+
+    public void SetBlockToParry(bool value)
+    {
+        BlockingField.IsParry = value;
+    }
+
+    public void DisableBlock()
+    {
+        BlockingField.gameObject.SetActive(false);
+    }
+
 
     // Handle Player Input // 
     private void OnAttack(InputValue input)
@@ -280,17 +298,7 @@ public class Character : MonoBehaviour
     }
 
 
-    // Input specific actions //
-
-    public void ThrowFireball()
-    {
-        Bullet b = bulletPool.GetBullet().GetComponent<Bullet>();
-        b.transform.position = transform.position + forward3 + (forward3 * 0.1f);
-        b.Launch(CharacterData.characterParameters.bulletParams, forward3);
-        attackCooldown = CharacterData.characterParameters.shotCooldown;
-        attackCooldownSpeed = 1.0f;
-    }
-
+    
     // What to do when the player begins blocking
     // TODO - research how to do input buffering to prevent players from feeling that they couldn't block
     private void BeginBlock()

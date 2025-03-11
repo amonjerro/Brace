@@ -9,6 +9,12 @@ public class StateMachine<EState> where EState : System.Enum
 
     AbsState<EState> _currentState;
     public AbsState<EState> CurrentState { get { return _currentState; } }
+    public Stack<AbsState<EState>> stateStack;
+
+    public StateMachine()
+    {
+        stateStack = new Stack<AbsState<EState>>();
+    }
 
     public void Update() {
         _currentState.Update();
@@ -37,5 +43,14 @@ public class StateMachine<EState> where EState : System.Enum
     public EState GetCurrentState()
     {
         return _currentState.GetStateValue();
+    }
+
+    public void StackState(AbsState<EState> state)
+    {
+        stateStack.Push(state);
+    }
+    public AbsState<EState> UnstackState()
+    {
+        return stateStack.Pop();
     }
 }

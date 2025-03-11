@@ -20,8 +20,9 @@ namespace InputManagement{
 
         }
 
-        public override string ToString() {  
-            return $"{actionType.ToString()} C:{consumed.ToString()} ";
+        public override string ToString() {
+            string s = isRelease ? "R" : "P";
+            return $"{s}-{actionType.ToString()} C:{consumed.ToString()} ";
         }
     }
 }

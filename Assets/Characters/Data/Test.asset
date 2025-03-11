@@ -16,6 +16,7 @@ MonoBehaviour:
     jumpDuration: 0.66
     jumpHeight: 4
     shotCooldown: 1
+    attackDuration: 1
     blockCooldown: 1
     parryWindow: 0.045
     sprite: {fileID: 0}

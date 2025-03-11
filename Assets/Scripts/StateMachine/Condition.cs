@@ -8,6 +8,21 @@ public abstract class Condition
     public abstract bool Test();
 }
 
+public class NotCondition : Condition
+{
+    Condition ConditionA;
+
+    public override bool Test()
+    {
+        return !ConditionA.Test();
+    }
+
+    public override void Reset()
+    {
+        ConditionA.Reset();
+    }
+}
+
 public abstract class AbsValueCondition<T> : Condition where T : IComparable
 {
     protected T ConditionValue;
@@ -71,11 +86,24 @@ public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable
     }
 }
 
-// Compound conditions types
-public class AndCondition : Condition
+public abstract class AbsCompoundCondition : Condition
 {
-    Condition ConditionA;
-    Condition ConditionB;
+    protected Condition ConditionA;
+    protected Condition ConditionB;
+    public Condition GetConditionA()
+    {
+        return ConditionA;
+    }
+
+    public Condition GetConditionB() {
+        return ConditionB;
+    }
+}
+
+// Compound conditions types
+public class AndCondition : AbsCompoundCondition
+{
+    
     public AndCondition(Condition conditionA, Condition conditionB)
     {
         ConditionA = conditionA;
@@ -94,24 +122,10 @@ public class AndCondition : Condition
     }
 }
 
-public class NotCondition : Condition
+
+
+public class OrCondition : AbsCompoundCondition
 {
-    Condition ConditionA;
-
-    public override bool Test()
-    {
-        return !ConditionA.Test();
-    }
-
-    public override void Reset() {
-        ConditionA.Reset();
-    }
-}
-
-public class OrCondition : Condition
-{
-    Condition ConditionA;
-    Condition ConditionB;
 
     public override bool Test()
     {

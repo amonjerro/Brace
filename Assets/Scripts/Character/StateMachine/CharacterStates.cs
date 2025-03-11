@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using InputManagement;
@@ -10,8 +9,9 @@ using InputManagement;
 public abstract class PlayerState : AbsState<CharacterStates>{
     protected InputMessage activeMessage;
     protected Character characterReference;
-    public PlayerState()
+    public PlayerState(StateMachine<CharacterStates> stateMachine)
     {
+        machine = stateMachine;
         activeMessage = null;
         transitions = new Dictionary<CharacterStates, Transition<CharacterStates>>();
     }
@@ -40,20 +40,24 @@ public abstract class PlayerState : AbsState<CharacterStates>{
 // The starting, idle state
 public class NeutralState : PlayerState
 {
-    public NeutralState() : base()
+    EqualsCondition<bool> isPress;
+    EqualsCondition<EInput> toBlockCondition;
+    public NeutralState(StateMachine<CharacterStates> s) : base(s)
     {
         stateValue = CharacterStates.Neutral;
 
         // Conditions
         EqualsCondition<EInput> toJumpCondition = new EqualsCondition<EInput>(EInput.Jump);
-        EqualsCondition<EInput> toBlockCondition = new EqualsCondition<EInput>(EInput.Block);
+        toBlockCondition = new EqualsCondition<EInput>(EInput.Block);
+        isPress = new EqualsCondition<bool>(false);
+        AndCondition blockComposite = new AndCondition(toBlockCondition, isPress);
         EqualsCondition<EInput> toAttackingCondition = new EqualsCondition<EInput>(EInput.Fireball);
 
         // Transitions
         Transition<CharacterStates> toJumpTransition = new Transition<CharacterStates>();
         toJumpTransition.SetCondition(toJumpCondition);
         Transition<CharacterStates> toParryTransition = new Transition<CharacterStates>();
-        toParryTransition.SetCondition(toBlockCondition);
+        toParryTransition.SetCondition(blockComposite);
         Transition<CharacterStates> toAttackTransition = new Transition<CharacterStates>();
         toAttackTransition.SetCondition(toAttackingCondition);
 
@@ -70,9 +74,14 @@ public class NeutralState : PlayerState
 
     protected override void OnExit()
    {
+        
         if (activeMessage != null)
         {
             activeMessage.consumed = true;
+        }
+        if (transitions[CharacterStates.Parrying].GetCondition().Test())
+        {
+            machine.StackState(this);
         }
         Flush();
     }
@@ -84,7 +93,13 @@ public class NeutralState : PlayerState
             return;
         }
 
+        isPress.SetValue(!activeMessage.isRelease);
         foreach (KeyValuePair<CharacterStates,Transition<CharacterStates>> kvp in transitions) {
+            if (kvp.Key == CharacterStates.Parrying)
+            {
+                toBlockCondition.SetValue(activeMessage.actionType);
+                continue;
+            }
             EqualsCondition<EInput> condition = (EqualsCondition<EInput>)kvp.Value.GetCondition();
             condition.SetValue(activeMessage.actionType);
         }
@@ -96,7 +111,7 @@ public class AttackingState : PlayerState
 {
     float timer = 0;
     GreaterThanCondition<float> toNeutral;
-    public AttackingState() : base() 
+    public AttackingState(StateMachine<CharacterStates> s) : base(s) 
     {
         stateValue = CharacterStates.Attacking;
     }
@@ -135,25 +150,31 @@ public class BlockingState : PlayerState
 {
     EqualsCondition<EInput> inputCondition;
     EqualsCondition<bool> releaseCondition;
-    public BlockingState() : base()
+    public BlockingState(StateMachine<CharacterStates> s) : base(s)
     {
         stateValue = CharacterStates.Blocking;
         inputCondition = new EqualsCondition<EInput>(EInput.Block);
         releaseCondition = new EqualsCondition<bool>(true);
         AndCondition condition = new AndCondition(inputCondition, releaseCondition);
-        Transition<CharacterStates> backToNeutral = new Transition<CharacterStates>();
-        backToNeutral.SetCondition(condition);
+        Transition<CharacterStates> backTransition = new Transition<CharacterStates>();
+        backTransition.SetCondition(condition);
 
-        transitions.Add(CharacterStates.Neutral, backToNeutral);
+        transitions.Add(CharacterStates.Neutral, backTransition);
     }
     protected override void OnEnter()
     {
-
+        characterReference.EnableBlock();
+        characterReference.SetBlockToParry(false);
     }
 
     protected override void OnExit()
     {
-        activeMessage.consumed = true;
+        if (activeMessage != null)
+        {
+            activeMessage.consumed = true;
+        }
+        characterReference.DisableBlock();
+        transitions[CharacterStates.Neutral].TargetState = machine.UnstackState();
         Flush();
     }
 
@@ -175,7 +196,7 @@ public class ParryingState : PlayerState
     EqualsCondition<bool> releaseCondition;
     GreaterThanCondition<float> greaterThanCondition;
     float timer = 0;
-    public ParryingState() : base()
+    public ParryingState(StateMachine<CharacterStates> s) : base(s)
     {
         // Conditions
         stateValue = CharacterStates.Parrying;
@@ -202,16 +223,25 @@ public class ParryingState : PlayerState
     protected override void OnEnter()
     {
         // Play some animation
+        characterReference.EnableBlock();
+        characterReference.SetBlockToParry(true);
 
         // Play some sound?
     }
 
     protected override void OnExit()
     {
+        if (!greaterThanCondition.Test())
+        {
+            transitions[CharacterStates.Neutral].TargetState = machine.UnstackState();
+        }
+
+
         if (activeMessage != null)
         {
             activeMessage.consumed = true;
         }
+        timer = 0;
         Flush();
     }
 
@@ -239,7 +269,7 @@ public class JumpingState : PlayerState
 
     float timer;
 
-    public JumpingState() : base()
+    public JumpingState(StateMachine<CharacterStates> s) : base(s)
     {
         stateValue = CharacterStates.Jumping;
         groundCondition = new EqualsCondition<bool>(true);
@@ -297,7 +327,7 @@ public class DownJumpingState : PlayerState
 {
     EqualsCondition<bool> groundCondition;
     float timer;
-    public DownJumpingState(): base()
+    public DownJumpingState(StateMachine<CharacterStates> s) : base(s)
     {
         stateValue = CharacterStates.DownJumping;
         groundCondition = new EqualsCondition<bool>(true);
