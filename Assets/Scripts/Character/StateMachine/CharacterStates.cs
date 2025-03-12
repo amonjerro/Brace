@@ -234,6 +234,8 @@ public class ParryingState : PlayerState
         if (!greaterThanCondition.Test())
         {
             transitions[CharacterStates.Neutral].TargetState = machine.UnstackState();
+            characterReference.SetBlockToParry(false);
+            characterReference.DisableBlock();
         }
 
 
