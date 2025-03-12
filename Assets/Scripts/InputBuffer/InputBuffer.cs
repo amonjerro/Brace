@@ -66,7 +66,11 @@ namespace InputManagement {
 
             if (inputQueue.Count >= bufferLength)
             {
-                inputQueue.Dequeue();
+                InputBufferItem ibi = inputQueue.Dequeue();
+                if (ibi.FindWinningAction() == activeMessage)
+                {
+                    activeMessage = null;
+                }
             }
 
             if (!item.WinningActionSet) {

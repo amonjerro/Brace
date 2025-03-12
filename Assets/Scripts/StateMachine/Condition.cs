@@ -98,6 +98,11 @@ public abstract class AbsCompoundCondition : Condition
     public Condition GetConditionB() {
         return ConditionB;
     }
+    public override void Reset()
+    {
+        ConditionA.Reset();
+        ConditionB.Reset();
+    }
 }
 
 // Compound conditions types
@@ -116,13 +121,8 @@ public class AndCondition : AbsCompoundCondition
         return ConditionA.Test() && ConditionB.Test();
     }
 
-    public override void Reset() {
-        ConditionA.Reset();
-        ConditionB.Reset();
-    }
+    
 }
-
-
 
 public class OrCondition : AbsCompoundCondition
 {
@@ -130,10 +130,5 @@ public class OrCondition : AbsCompoundCondition
     public override bool Test()
     {
         return ConditionA.Test() || ConditionB.Test();
-    }
-
-    public override void Reset() {
-        ConditionA.Reset();
-        ConditionB.Reset();
     }
 }

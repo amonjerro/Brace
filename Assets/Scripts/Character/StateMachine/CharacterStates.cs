@@ -34,7 +34,7 @@ public abstract class PlayerState : AbsState<CharacterStates>{
             transition.ResetCondition();
         }
     }
-}
+}   
 
 
 // The starting, idle state
@@ -49,7 +49,7 @@ public class NeutralState : PlayerState
         // Conditions
         EqualsCondition<EInput> toJumpCondition = new EqualsCondition<EInput>(EInput.Jump);
         toBlockCondition = new EqualsCondition<EInput>(EInput.Block);
-        isPress = new EqualsCondition<bool>(false);
+        isPress = new EqualsCondition<bool>(true);
         AndCondition blockComposite = new AndCondition(toBlockCondition, isPress);
         EqualsCondition<EInput> toAttackingCondition = new EqualsCondition<EInput>(EInput.Fireball);
 
@@ -295,7 +295,7 @@ public class JumpingState : PlayerState
 
     protected override void OnExit()
     {
-        if (activeMessage != null)
+        if (jumpCondition.Test())
         {
             activeMessage.consumed = true;
         }
