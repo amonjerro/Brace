@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using InputManagement;
+using GameMenus;
 
 public class Character : MonoBehaviour
 {
@@ -71,6 +72,8 @@ public class Character : MonoBehaviour
         originalYPosition = transform.position.y;
         ConfigureInputBuffer();
         SetupStateMachine();
+        MenuManager.PlayInputSwitch += SetInputToGame;
+        MenuManager.UIInputSwitch += SetInputToUI;
     }
 
     private void ConfigureInputBuffer()
@@ -297,10 +300,13 @@ public class Character : MonoBehaviour
         bufferItem.AddInput(im);
     }
 
+    private void OnPause(InputValue input)
+    {
+
+    }
 
     
     // What to do when the player begins blocking
-    // TODO - research how to do input buffering to prevent players from feeling that they couldn't block
     private void BeginBlock()
     {
         InputMessage im = new InputMessage(EInput.Block);
@@ -316,5 +322,15 @@ public class Character : MonoBehaviour
         bufferItem.AddInput(im);
     }
 
+    private void SetInputToUI()
+    {
+        PlayerInput pi = GetComponent<PlayerInput>();
+        pi.SwitchCurrentActionMap("UI");
+    }
     
+    private void SetInputToGame()
+    {
+        PlayerInput pi = GetComponent<PlayerInput>();
+        pi.SwitchCurrentActionMap("Player");
+    }
 }

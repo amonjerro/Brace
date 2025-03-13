@@ -1,10 +1,9 @@
 using System;
-using UnityEngine;
 
 /// <summary>
 /// Handles the game state for battle
 /// </summary>
-public class BattleManager : MonoBehaviour
+public class BattleManager : AbsGameService
 {
     StateMachine<GameStates> stateMachine;
     public static Action gameOver;
@@ -44,4 +43,8 @@ public class BattleManager : MonoBehaviour
         gameOver?.Invoke();
     }
 
+    public override void CleanUp()
+    {
+        gameOver = null;
+    }
 }

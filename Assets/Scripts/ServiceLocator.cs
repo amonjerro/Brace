@@ -8,15 +8,15 @@ using UnityEngine;
 public class ServiceLocator : MonoBehaviour
 {
     public static ServiceLocator Instance;
-    Dictionary<Type, MonoBehaviour> serviceCache;
+    Dictionary<Type, AbsGameService> serviceCache;
 
     private void Awake()
     {
         Instance = this;
-        serviceCache = new Dictionary<Type, MonoBehaviour>();
+        serviceCache = new Dictionary<Type, AbsGameService>();
     }
 
-    public T GetService<T>() where T : MonoBehaviour
+    public T GetService<T>() where T : AbsGameService
     {
         // If Dict is not set up, avoid null reference exception
         if (serviceCache == null) {
@@ -34,5 +34,12 @@ public class ServiceLocator : MonoBehaviour
         if (!component) { return null; }
         serviceCache.Add(typeof(T), component);
         return component;
+    }
+
+    public void RunServiceCleanup()
+    {
+        foreach (AbsGameService absGameService in serviceCache.Values) {
+            absGameService.CleanUp();
+        }
     }
 }
