@@ -19,23 +19,9 @@ namespace GameMenus
         // Character Select
         public void ToCharacterScreen()
         {
-            SceneTransitionManager.LoadScene(2);
+            SceneTransitionManager.LoadScene(Constants.CharacterScene);
         }
 
-        // Back To Main Menu
-        public void ToMainMenu()
-        {
-            SceneTransitionManager.LoadScene(1);
-        }
-
-        // Quit To Desktop
-        public void QuitGame()
-        {
-#if UNITY_EDITOR
-            EditorApplication.ExitPlaymode();
-#else
-            Application.Quit();
-#endif
-        }
+        
     }
 }

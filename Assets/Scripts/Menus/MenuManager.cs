@@ -15,6 +15,9 @@ namespace GameMenus
         Options
     }
 
+    /// <summary>
+    /// Game service that manages the state of UI Menus
+    /// </summary>
     public class MenuManager : AbsGameService
     {
         public static Action UIInputSwitch;
@@ -27,6 +30,7 @@ namespace GameMenus
         Dictionary<Menus, AbsMenu> menuList;
         Stack<Menus> menuStack;
 
+        // Upon awake, load all available menus and cache references
         public void Awake()
         {
             menuList = new Dictionary<Menus, AbsMenu>();
@@ -43,6 +47,7 @@ namespace GameMenus
             }
         }
 
+        // Open a menu screen and show it.
         public void OpenMenu(Menus menu)
         {
             if (!menuList.ContainsKey(menu))
@@ -62,6 +67,7 @@ namespace GameMenus
             menuList[menu].Open();
         }
 
+        // Hide and close a menu screen.
         public void CloseMenu(Menus menu)
         {
             if (!ValidateClose(menu))
@@ -84,6 +90,7 @@ namespace GameMenus
             
         }
 
+        // Validation function to avoid closing menus in a way that messes up the UI layer stack
         private bool ValidateClose(Menus menu)
         {
             if (!menuList.ContainsKey(menu))
@@ -105,6 +112,7 @@ namespace GameMenus
             return true;
         }
 
+        // Clean up subscribers to delegate actions
         public override void CleanUp()
         {
             UIInputSwitch = null;
@@ -113,6 +121,10 @@ namespace GameMenus
 
     }
 
+
+    /// <summary>
+    /// Abstract class to define a game menu
+    /// </summary>
     [RequireComponent(typeof(Animator))]
     public abstract class AbsMenu : MonoBehaviour
     {
@@ -123,6 +135,9 @@ namespace GameMenus
 
         protected MenuManager menuManagerReference = null;
 
+        /// <summary>
+        /// Opens this menu.
+        /// </summary>
         public virtual void Open()
         {
             if (menuManagerReference == null)
@@ -132,19 +147,38 @@ namespace GameMenus
             animator.SetTrigger(Constants.UIAnimationShow);
         }
 
+        // Show menu - useful when switching between stack layers
         public virtual void Show()
         {
             gameObject.SetActive(true);
         }
 
+        // Hide menu - useful when switching between stack layers
         public virtual void Hide()
         {
             gameObject.SetActive(false);
         }
 
+        // Close this menu.
         public virtual void Close()
         {
             animator.SetTrigger(Constants.UIAnimationHide);
+        }
+
+        // Back To Main Menu
+        public void ToMainMenu()
+        {
+            SceneTransitionManager.LoadScene(Constants.MainMenu);
+        }
+
+        // Quit To Desktop
+        public void QuitGame()
+        {
+#if UNITY_EDITOR
+            EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
         }
     }
 }
