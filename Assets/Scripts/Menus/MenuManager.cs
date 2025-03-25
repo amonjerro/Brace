@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace GameMenus
 {
@@ -25,6 +26,7 @@ namespace GameMenus
 
 
         [SerializeField]
+        [Tooltip("Canvas that holds all possible menus")]
         Canvas canvas;
 
         Dictionary<Menus, AbsMenu> menuList;
@@ -132,8 +134,9 @@ namespace GameMenus
 
         [SerializeField]
         protected Animator animator;
-
+        
         protected MenuManager menuManagerReference = null;
+
 
         /// <summary>
         /// Opens this menu.

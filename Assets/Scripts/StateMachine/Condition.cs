@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 // Conditions for the state machine transitions
 public abstract class Condition
@@ -8,6 +7,8 @@ public abstract class Condition
     public abstract bool Test();
 }
 
+
+// Reverses the value of a condition to perform boolean NOT testing
 public class NotCondition : Condition
 {
     Condition ConditionA;
@@ -23,6 +24,7 @@ public class NotCondition : Condition
     }
 }
 
+// Abstract condition to parent all value evaluation conditions
 public abstract class AbsValueCondition<T> : Condition where T : IComparable
 {
     protected T ConditionValue;
@@ -38,6 +40,11 @@ public abstract class AbsValueCondition<T> : Condition where T : IComparable
 }
 
 // Evaluation Conditions
+
+/// <summary>
+/// Checks to see if a value falls within a specified range
+/// </summary>
+/// <typeparam name="T">The type to compare and evaluate</typeparam>
 public class WithinRangeCondition<T> : AbsValueCondition<T> where T : IComparable
 {
     T MinValue;
@@ -56,6 +63,10 @@ public class WithinRangeCondition<T> : AbsValueCondition<T> where T : IComparabl
     }
 }
 
+/// <summary>
+/// Checks to see if a value is greater than some specified value
+/// </summary>
+/// <typeparam name="T">The type to compare and evaluate</typeparam>
 public class GreaterThanCondition<T> : AbsValueCondition<T> where T : IComparable
 {
     T Threshold;
@@ -71,6 +82,11 @@ public class GreaterThanCondition<T> : AbsValueCondition<T> where T : IComparabl
     }
 }
 
+
+/// <summary>
+/// Checks to see if a value is equal to some specified value
+/// </summary>
+/// <typeparam name="T">The type to compare and evaluate</typeparam>
 public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable
 {
     T ExpectedValue;
@@ -86,6 +102,9 @@ public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable
     }
 }
 
+/// <summary>
+/// Abstract parent to define conditions that compound other conditions
+/// </summary>
 public abstract class AbsCompoundCondition : Condition
 {
     protected Condition ConditionA;
@@ -106,6 +125,10 @@ public abstract class AbsCompoundCondition : Condition
 }
 
 // Compound conditions types
+
+/// <summary>
+/// Performs an AND evaluation between two conditions
+/// </summary>
 public class AndCondition : AbsCompoundCondition
 {
     
@@ -124,6 +147,9 @@ public class AndCondition : AbsCompoundCondition
     
 }
 
+/// <summary>
+/// Performs an OR evaluation between two conditions
+/// </summary>
 public class OrCondition : AbsCompoundCondition
 {
 

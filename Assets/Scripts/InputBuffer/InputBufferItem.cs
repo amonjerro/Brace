@@ -69,6 +69,7 @@ namespace InputManagement
             return s;
         }
 
+        // Add an input signal to this buffer item
         public void AddInput(InputMessage m)
         {
             inputMessages.Add(m);

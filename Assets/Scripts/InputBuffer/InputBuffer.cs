@@ -10,7 +10,10 @@ namespace InputManagement {
         Queue<InputBufferItem> inputQueue;
         static Dictionary<EInput, int> priorities;
 
+        // Push flag is used to determine if a new InputBufferItem can be pushed into the buffer
         public bool PushFlag { get; private set; }
+
+        // Tests whether the buffer is paused
         public bool BufferPaused { get; set; }
 
         //** Static helper messages **//
@@ -79,15 +82,19 @@ namespace InputManagement {
             inputQueue.Enqueue(item);
         }
 
+        // Updates the currently queued active message with a new one
         public void UpdateActiveMessage()
         {
             InputMessage contenderAction;
 
             foreach(InputBufferItem ibi in inputQueue)
             {
+                // Ignore buffer items that have already been processed
                 if (ibi.Acknowledged == true) {
                     continue;
                 }
+
+                // Ignore buffer items that do not have a winning action
                 if (!ibi.WinningActionSet)
                 {
                     continue;
@@ -95,6 +102,8 @@ namespace InputManagement {
 
 
                 contenderAction = ibi.FindWinningAction();
+                
+                // Update the buffer item if this action has been consumed
                 if (contenderAction.consumed == true)
                 {
                     ibi.Acknowledged = true;
@@ -115,30 +124,24 @@ namespace InputManagement {
             }
         }
 
+        // Clear the active message
         private void ClearActive()
         {
             activeMessage = null;
         }
 
-        private void SetActive(InputMessage newActive)
-        {
-            activeMessage = newActive;
-        }
-
+        // Get the currently active message
         public InputMessage GetActiveMessage()
         {
             return activeMessage;
         }
 
-        public void SetActiveConsumed()
-        {
-            activeMessage.consumed = true;
-        }
-
+        // Get this buffer's full input queue
         public Queue<InputBufferItem> GetInputQueue() { 
             return inputQueue;
         }
 
+        // Toggle the buffer's push flag
         private void ToggleFlag()
         {
             PushFlag = !PushFlag;

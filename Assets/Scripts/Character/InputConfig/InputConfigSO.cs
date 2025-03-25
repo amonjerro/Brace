@@ -25,7 +25,10 @@ namespace InputManagement
     [Serializable]
     public struct PriorityPair
     {
+        [Tooltip("The input type")]
         public EInput InputType;
+
+        [Tooltip("Lower values are treated as higher priority")]
         public int Priority;
     }
 }

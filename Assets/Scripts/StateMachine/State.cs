@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+/// <summary>
+/// States for characters
+/// </summary>
 public enum CharacterStates
 {
     Neutral,
@@ -8,14 +11,19 @@ public enum CharacterStates
     Blocking,
     Parrying
 }
-
+/// <summary>
+/// States for the game state machine
+/// </summary>
 public enum GameStates
 {
     Countdown,
     Active,
     Over
 }
-
+/// <summary>
+/// Class that defines the base behavior for any state in any state machine
+/// </summary>
+/// <typeparam name="EState"></typeparam>
 public abstract class AbsState<EState> where EState : System.Enum
 {
     protected StateMachine<EState> machine;
@@ -25,6 +33,7 @@ public abstract class AbsState<EState> where EState : System.Enum
     protected abstract void OnEnter();
     protected abstract void OnExit();
 
+    // Wrapper public methods
     public void Update()
     {
         OnUpdate();
@@ -39,6 +48,7 @@ public abstract class AbsState<EState> where EState : System.Enum
         OnExit(); 
     }
 
+    // Debug functions
     public EState GetStateValue()
     {
         return stateValue;

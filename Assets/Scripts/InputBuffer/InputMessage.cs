@@ -4,9 +4,16 @@ namespace InputManagement{
         None,
         Fireball,
         Jump,
-        Block
+        Block,
+        Up,
+        Down,
+        Left,
+        Right
     }
 
+    /// <summary>
+    /// Class that defines the information package for a player input
+    /// </summary>
     public class InputMessage
     {
         public EInput actionType;
