@@ -9,6 +9,7 @@ public abstract class CursorState : AbsState<CharacterCursorStates> {
     public CursorState(CharacterCursor cursor)
     {
         this.cursor = cursor;
+        transitions = new System.Collections.Generic.Dictionary<CharacterCursorStates, Transition<CharacterCursorStates>>();
     }
 
     public void SetMessage(InputMessage m) {
@@ -31,7 +32,7 @@ public class ChoosingState : CursorState
         readyInput = new EqualsCondition<EInput>(EInput.Fireball);
         toReadyTransition.SetCondition(readyInput);
         transitions.Add(CharacterCursorStates.Ready,toReadyTransition);
-    
+        
     }
 
     protected override void OnUpdate()
@@ -42,7 +43,27 @@ public class ChoosingState : CursorState
         }
 
         readyInput.SetValue(inputMessage.actionType);
-        cursor.UpdatePosition(CharacterSelect.InputToVector(inputMessage.actionType));
+        (int, int) inputVector = CharacterSelect.InputToVector(inputMessage.actionType);
+        (int, int) currentPosition = cursor.GetCurrentPosition();
+        (int, int) newPosition = (inputVector.Item1 + currentPosition.Item1, inputVector.Item2 + currentPosition.Item2);
+        if (newPosition.Item1 < -1) { 
+            newPosition.Item1 = 1;
+        }
+        if (newPosition.Item2 < -1)
+        {
+            newPosition.Item2 = 1;
+        }
+        if (newPosition.Item1 > 1)
+        {
+            newPosition.Item1 = -1;
+        }
+        if (newPosition.Item2 > 1)
+        {
+            newPosition.Item2 = -1;
+        }
+        cursor.UpdatePosition(newPosition);
+        Flush();
+
     }
 
     protected override void OnEnter()
@@ -52,7 +73,6 @@ public class ChoosingState : CursorState
 
     protected override void OnExit()
     {
-        Flush();
     }
 }
 

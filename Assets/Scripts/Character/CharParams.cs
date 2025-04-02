@@ -18,6 +18,8 @@ public struct CharParams
     // Projectile parameters
     public BulletParams bulletParams;
 
+    public CharacterInfo characterInfo;
+
 }
 
 [Serializable]
@@ -26,4 +28,13 @@ public struct BulletParams
     public float moveSpeed;
     public Sprite bulletSprite;
     public float bulletDamage;
+}
+
+[Serializable]
+public struct CharacterInfo
+{
+    public string characterName;
+    public string fireballAbility;
+    public string blockAbility;
+    public string jumpAbility;
 }
