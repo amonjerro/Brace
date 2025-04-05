@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using InputManagement;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,10 +28,13 @@ namespace GameMenus
         [SerializeField]
         List<CharacterSO> characterData;
 
+        Dictionary<int, bool> playerReadyStatus;
+
         private void Start()
         {
             characterPortraits = new Dictionary<(int, int), RectTransform>();
             cursors = new List<CharacterCursor>();
+            playerReadyStatus = new Dictionary<int, bool>();
             Initialize();
         }
 
@@ -67,11 +71,28 @@ namespace GameMenus
             UpdateCharacterProfile(cursors.IndexOf(c), FlattenLocationToIndex(newLocation));
         }
 
+        public int GetPlayerIndex(CharacterCursor c)
+        {
+            return cursors.IndexOf(c);
+        }
+
         public void SpawnCursor(CharacterCursor cursor)
         {
             cursors.Add(cursor);
             cursor.GetComponent<Image>().color = playerCursorColors[cursors.Count-1];
+            playerReadyStatus.Add(cursors.Count-1, false);
             UpdateCursorImageLocation(cursors[cursors.Count-1], (0, 0));
+        }
+
+        public void SetPlayerReadyStatus(int PlayerIndex, bool ready)
+        {
+            playerReadyStatus[PlayerIndex] = ready;
+            if (TestForGameStart())
+            {
+                // Game Start Process
+                // Currently only loads you into next level, we could add a timer that can be interrupted to allow for players to back out
+                SceneTransitionManager.LoadScene(2);
+            }
         }
 
         private void Initialize()
@@ -100,6 +121,19 @@ namespace GameMenus
             else if (side == 1) { 
                 rightCharacterPanel.UpdateCharacterPanel(characterData[index % characterData.Count]);
             }
+        }
+
+        private bool TestForGameStart()
+        {
+            foreach(bool status in playerReadyStatus.Values)
+            {
+                if (!status)
+                {
+                    return status;
+                }
+            }
+
+            return true;
         }
     }
 }

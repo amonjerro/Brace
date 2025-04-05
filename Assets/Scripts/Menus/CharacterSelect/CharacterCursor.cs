@@ -16,9 +16,11 @@ public class CharacterCursor : MonoBehaviour
     bool initialized = false;
     (int, int) CurrentPosition;
     StateMachine<CharacterCursorStates> stateMachine;
+    int PlayerId;
 
     private void Start()
     {
+        PlayerId = -1;
         Initialize();
     }
 
@@ -27,6 +29,7 @@ public class CharacterCursor : MonoBehaviour
     private void Initialize()
     {
         CurrentPosition = (0, 0);
+
         // Character Select referencing
         GameObject go = GameObject.Find("CharacterSelectMenu");
         characterSelect = go.GetComponent<CharacterSelect>();
@@ -34,6 +37,8 @@ public class CharacterCursor : MonoBehaviour
         characterSelect.SpawnCursor(this);
         PlayerInput pi = gameObject.GetComponent<PlayerInput>();
         pi.SwitchCurrentActionMap("UI");
+        PlayerId = characterSelect.GetPlayerIndex(this);
+
 
         // StateMachine stuff
         stateMachine = new StateMachine<CharacterCursorStates>();
@@ -42,6 +47,8 @@ public class CharacterCursor : MonoBehaviour
         choosing.transitions[CharacterCursorStates.Ready].TargetState = ready;
         ready.transitions[CharacterCursorStates.Selecting].TargetState = choosing;
         stateMachine.SetStartingState(choosing);
+
+
         initialized = true;
 
     }
@@ -57,6 +64,10 @@ public class CharacterCursor : MonoBehaviour
     {
         CurrentPosition = newPosition;
         characterSelect.UpdateCursorImageLocation(this,newPosition);
+    }
+
+    public void SetReadyUp(bool readyStatus){
+        characterSelect.SetPlayerReadyStatus(PlayerId, readyStatus);
     }
 
 

@@ -46,6 +46,7 @@ public class CharacterInterface : MonoBehaviour
         {
             PlayerInput input = createdCharacter.gameObject.AddComponent<PlayerInput>();
             input.actions = defaultActionAsset;
+            input.SwitchCurrentActionMap("Player");
         } else
         {
             AIController controller = createdCharacter.gameObject.AddComponent<AIController>();

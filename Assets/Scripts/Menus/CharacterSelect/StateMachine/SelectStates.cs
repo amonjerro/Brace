@@ -1,6 +1,7 @@
 
 using GameMenus;
 using InputManagement;
+using UnityEngine;
 
 public abstract class CursorState : AbsState<CharacterCursorStates> {
     protected CharacterCursor cursor;
@@ -68,6 +69,7 @@ public class ChoosingState : CursorState
 
     protected override void OnEnter()
     {
+        cursor.SetReadyUp(false);
         readyInput.Reset();
     }
 
@@ -97,6 +99,7 @@ public class ReadyState : CursorState
 
     protected override void OnEnter()
     {
+        cursor.SetReadyUp(true);
         choosingInput.Reset();
     }
 
