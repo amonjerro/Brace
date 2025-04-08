@@ -8,6 +8,7 @@ public class StateMachine<EState> where EState : System.Enum
 {
 
     AbsState<EState> _currentState;
+    AbsState<EState> _startingState;
     public AbsState<EState> CurrentState { get { return _currentState; } }
     public Stack<AbsState<EState>> stateStack;
 
@@ -37,6 +38,7 @@ public class StateMachine<EState> where EState : System.Enum
     /// <param name="state"></param>
     public void SetStartingState(AbsState<EState> state)
     {
+        _startingState = state;
         _currentState = state;
     }
 
@@ -52,5 +54,10 @@ public class StateMachine<EState> where EState : System.Enum
     public AbsState<EState> UnstackState()
     {
         return stateStack.Pop();
+    }
+
+    public void RestoreInitialState()
+    {
+        _currentState = _startingState;
     }
 }

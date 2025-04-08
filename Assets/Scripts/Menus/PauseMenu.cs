@@ -16,13 +16,6 @@ namespace GameMenus
         {
             menuManagerReference.OpenMenu(Menus.Options);
         }
-
-        // Character Select
-        public void ToCharacterScreen()
-        {
-            SceneTransitionManager.LoadScene(Constants.CharacterScene);
-        }
-
         
     }
 }

@@ -174,6 +174,13 @@ namespace GameMenus
             SceneTransitionManager.LoadScene(Constants.MainMenu);
         }
 
+        // Back To Main Menu
+        public void ToCharacterSelect()
+        {
+            SceneTransitionManager.LoadScene(Constants.CharacterScene);
+        }
+
+
         // Quit To Desktop
         public void QuitGame()
         {

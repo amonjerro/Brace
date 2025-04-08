@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using GameMenus;
 
 // This class triggers the countdown at the start of the fight
 public class CountdownState : AbsState<GameStates>
@@ -20,7 +21,7 @@ public class CountdownState : AbsState<GameStates>
     protected override void OnEnter()
     {
         // Trigger countdown UI
-
+        Time.timeScale = 1f;
         // Disable inputs
     }
 
@@ -85,6 +86,7 @@ public class GameOverState : AbsState<GameStates>
         Time.timeScale = 0;
 
         // Show the end-of-game UI
+        ServiceLocator.Instance.GetService<MenuManager>().OpenMenu(Menus.GameEnd);
     }
     protected override void OnExit()
     {

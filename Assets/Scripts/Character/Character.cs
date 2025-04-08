@@ -61,6 +61,13 @@ public class Character : MonoBehaviour
         Initialize();
     }
 
+    public void Reset()
+    {
+        currentHealth = MAX_HEALTH;
+        healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
+        stateMachine.RestoreInitialState();
+    }
+
     private void Initialize()
     {
         bulletPool = FindAnyObjectByType<BulletPool>();
@@ -302,7 +309,7 @@ public class Character : MonoBehaviour
 
     private void OnPause(InputValue input)
     {
-
+        ServiceLocator.Instance.GetService<MenuManager>().OpenMenu(Menus.Pause);
     }
 
     
@@ -325,10 +332,12 @@ public class Character : MonoBehaviour
     private void SetInputToUI()
     {
         PlayerInput pi = GetComponent<PlayerInput>();
-        pi.SwitchCurrentActionMap("UI");
+        if (pi != null) {
+            pi.SwitchCurrentActionMap("UI");
+        }
     }
     
-    private void SetInputToGame()
+    public void SetInputToGame()
     {
         PlayerInput pi = GetComponent<PlayerInput>();
         pi.SwitchCurrentActionMap("Player");

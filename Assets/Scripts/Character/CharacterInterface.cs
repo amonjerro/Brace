@@ -46,7 +46,7 @@ public class CharacterInterface : MonoBehaviour
         {
             PlayerInput input = createdCharacter.gameObject.AddComponent<PlayerInput>();
             input.actions = defaultActionAsset;
-            input.SwitchCurrentActionMap("Player");
+            createdCharacter.SetInputToGame();
         } else
         {
             AIController controller = createdCharacter.gameObject.AddComponent<AIController>();
@@ -54,5 +54,7 @@ public class CharacterInterface : MonoBehaviour
         }
         createdCharacter.SetHealthBarController(playerHealthBar);
         createdCharacter.SetInputBufferDebugger(inputDebugger);
+
+
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 
 /// <summary>
@@ -8,12 +9,26 @@ public class BattleManager : AbsGameService
     StateMachine<GameStates> stateMachine;
     public static Action gameOver;
 
+    List<Character> activeCharacters;
+
+    private void Awake()
+    {
+        activeCharacters = new List<Character>();
+    }
+
 
     public void Start()
     {
         SetupStateMachine();
+    }
 
-        // Start the sequence
+    public void Reset()
+    {
+        foreach (Character c in activeCharacters) { 
+            c.Reset();
+        }
+
+        stateMachine.RestoreInitialState();
         stateMachine.CurrentState.Enter();
     }
 
