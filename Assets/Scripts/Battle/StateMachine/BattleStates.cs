@@ -82,11 +82,9 @@ public class GameOverState : AbsState<GameStates>
     protected override void OnEnter()
     {
         Debug.Log("Game is over!");
-        // Pause the game
-        Time.timeScale = 0;
 
         // Show the end-of-game UI
-        ServiceLocator.Instance.GetService<MenuManager>().OpenMenu(Menus.GameEnd);
+        ServiceLocator.Instance.GetService<MenuManager>().OpenMenu(Menus.EndBanner);
     }
     protected override void OnExit()
     {

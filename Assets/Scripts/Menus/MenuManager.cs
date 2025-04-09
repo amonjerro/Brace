@@ -13,7 +13,8 @@ namespace GameMenus
         Pause,
         GameEnd,
         CharacterSelect,
-        Options
+        Options,
+        EndBanner
     }
 
     /// <summary>
@@ -66,6 +67,10 @@ namespace GameMenus
                 menuList[menuStack.Peek()].Hide();
             }
             menuStack.Push(menu);
+            if (!menuList[menu].gameObject.activeInHierarchy)
+            {
+                menuList[menu].gameObject.SetActive(true);
+            }
             menuList[menu].Open();
         }
 
@@ -147,13 +152,19 @@ namespace GameMenus
             {
                 menuManagerReference = ServiceLocator.Instance.GetService<MenuManager>();
             }
-            animator.SetTrigger(Constants.UIAnimationShow);
+            if (gameObject.activeSelf) {
+                Debug.Log("Active self");
+                animator.SetTrigger(Constants.UIAnimationShow);
+            }
         }
+
+        public virtual void OnShow() { }
 
         // Show menu - useful when switching between stack layers
         public virtual void Show()
         {
             gameObject.SetActive(true);
+            OnShow();
         }
 
         // Hide menu - useful when switching between stack layers
