@@ -40,6 +40,7 @@ public class Character : MonoBehaviour
     Vector3 forward3;
     float originalYPosition;
     BulletPool bulletPool;
+    bool bInputsEnabled = true;
     bool bCanBeDamaged = true;
 
     public bool IsGrounded {  get { return transform.position.y <= originalYPosition; } }
@@ -69,7 +70,11 @@ public class Character : MonoBehaviour
         healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
         stateMachine.RestoreInitialState();
         bCanBeDamaged = true;
+    }
 
+    public void SetInputStatus(bool status)
+    {
+        bInputsEnabled = status;
     }
 
     private void Initialize()
@@ -112,11 +117,15 @@ public class Character : MonoBehaviour
         DownJumpingState down = new DownJumpingState(stateMachine);
         down.SetCharacter(this);
 
+        JumpAttackState jumpAttack = new JumpAttackState(stateMachine);
+        jumpAttack.SetCharacter(this);
+
         ParryingState parry = new ParryingState(stateMachine);
         parry.SetCharacter(this);
 
         BlockingState blocking = new BlockingState(stateMachine);
         blocking.SetCharacter(this);
+
 
         // Set up transitions
         neutral.transitions[CharacterStates.Attacking].TargetState = attacking;
@@ -127,7 +136,10 @@ public class Character : MonoBehaviour
         
         jumping.transitions[CharacterStates.DownJumping].TargetState = down;
         jumping.transitions[CharacterStates.Neutral].TargetState = neutral;
+        jumping.transitions[CharacterStates.JumpAttack].TargetState = jumpAttack;
+
         down.transitions[CharacterStates.Neutral].TargetState = neutral;
+        jumpAttack.transitions[CharacterStates.DownJumping].TargetState = down;
 
         parry.transitions[CharacterStates.Blocking].TargetState = blocking;
 
@@ -290,6 +302,7 @@ public class Character : MonoBehaviour
     // Handle Player Input // 
     private void OnAttack(InputValue input)
     {
+        if (!bInputsEnabled) return;
         InputMessage im = new InputMessage(EInput.Fireball);
         bufferItem.AddInput(im);
     }
@@ -307,6 +320,7 @@ public class Character : MonoBehaviour
 
     private void OnJump(InputValue input)
     {
+        if (!bInputsEnabled) return;
         InputMessage im = new InputMessage(EInput.Jump);
         bufferItem.AddInput(im);
     }
@@ -320,6 +334,7 @@ public class Character : MonoBehaviour
     // What to do when the player begins blocking
     private void BeginBlock()
     {
+        if (!bInputsEnabled) return;
         InputMessage im = new InputMessage(EInput.Block);
         im.isRelease = false;
         bufferItem.AddInput(im);
@@ -328,6 +343,7 @@ public class Character : MonoBehaviour
     // What to do when the player stops blocking
     private void ReleaseBlock()
     {
+        if (!bInputsEnabled) return;
         InputMessage im = new InputMessage(EInput.Block);
         im.isRelease = true;
         bufferItem.AddInput(im);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using InputManagement;
+using Unity.VisualScripting;
 
 /// <summary>
 /// Player states require a little more information than just the abstract state
@@ -267,7 +268,9 @@ public class ParryingState : PlayerState
 public class JumpingState : PlayerState
 {
     EqualsCondition<bool> groundCondition;
+    GreaterThanCondition<float> heightRequirement;
     EqualsCondition<EInput> jumpCondition;
+    EqualsCondition<EInput> attackCondition;
 
     float timer;
 
@@ -276,15 +279,20 @@ public class JumpingState : PlayerState
         stateValue = CharacterStates.Jumping;
         groundCondition = new EqualsCondition<bool>(true);
         jumpCondition = new EqualsCondition<EInput>(EInput.Jump);
+        attackCondition = new EqualsCondition<EInput>(EInput.Fireball);
+        heightRequirement = new GreaterThanCondition<float>(-1.0f);
+        AndCondition andCondition = new AndCondition(attackCondition, heightRequirement);
 
         Transition<CharacterStates> toNeutral = new Transition<CharacterStates>();
         toNeutral.SetCondition(groundCondition);
         Transition<CharacterStates> toDownJumping = new Transition<CharacterStates>();
         toDownJumping.SetCondition(jumpCondition);
+        Transition<CharacterStates> toJumpAttack = new Transition<CharacterStates>();
+        toJumpAttack.SetCondition(andCondition);
 
         transitions.Add(CharacterStates.Neutral, toNeutral);
         transitions.Add(CharacterStates.DownJumping, toDownJumping);
-
+        transitions.Add(CharacterStates.JumpAttack, toJumpAttack);
     }
     protected override void OnEnter()
     {
@@ -301,6 +309,10 @@ public class JumpingState : PlayerState
         {
             activeMessage.consumed = true;
         }
+
+        if (attackCondition.Test()) {
+            activeMessage.consumed = true;
+        }
         Flush();
 
         // Create landing particle system on grounded
@@ -314,12 +326,15 @@ public class JumpingState : PlayerState
 
         // Check for grounded
         groundCondition.SetValue(characterReference.IsGrounded);
+        heightRequirement.SetValue(characterReference.transform.position.y);
+
 
         // If down jumping called, execute it
         if (activeMessage == null) {
             return;
         }
         jumpCondition.SetValue(activeMessage.actionType);
+        attackCondition.SetValue(activeMessage.actionType);
 
     }
 }
@@ -352,5 +367,44 @@ public class DownJumpingState : PlayerState
         timer += Time.deltaTime;
         characterReference.HandleDownJumpUpdate(timer);
         groundCondition.SetValue(characterReference.IsGrounded);
+    }
+}
+
+public class JumpAttackState : PlayerState
+{
+    float timer = 0;
+    GreaterThanCondition<float> toJumpCondition;
+    public JumpAttackState(StateMachine<CharacterStates> s) : base(s)
+    {
+        stateValue = CharacterStates.JumpAttack;
+        
+    }
+
+    public override void SetCharacter(Character c)
+    {
+        base.SetCharacter(c);
+        float attackDuration = c.GetAttackDuration();
+        toJumpCondition = new GreaterThanCondition<float>(attackDuration);
+        Transition<CharacterStates> toJumpTransition = new Transition<CharacterStates>();
+        toJumpTransition.SetCondition(toJumpCondition);
+        transitions.Add(CharacterStates.DownJumping, toJumpTransition);
+    }
+
+    protected override void OnEnter()
+    {
+        timer = 0;
+        toJumpCondition.SetValue(timer);
+        characterReference.ThrowFireball();
+    }
+
+    protected override void OnExit()
+    {
+        Flush();
+    }
+
+    protected override void OnUpdate()
+    {
+        timer += Time.deltaTime;
+        toJumpCondition.SetValue(timer);
     }
 }

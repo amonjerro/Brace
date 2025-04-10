@@ -25,7 +25,6 @@ public class BattleManager : AbsGameService
 
     public void Reset()
     {
-        Debug.Log("Manager reset");   
         foreach (Character c in activeCharacters) { 
             c.Reset();
         }
@@ -68,5 +67,13 @@ public class BattleManager : AbsGameService
     public override void CleanUp()
     {
         gameOver = null;
+    }
+
+    public void SetCharacterInputStatus(bool val)
+    {
+        foreach (Character c in activeCharacters)
+        {
+            c.SetInputStatus(val);
+        }
     }
 }

@@ -9,7 +9,8 @@ public enum CharacterStates
     DownJumping,
     Attacking,
     Blocking,
-    Parrying
+    Parrying,
+    JumpAttack
 }
 /// <summary>
 /// States for the game state machine

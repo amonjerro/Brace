@@ -24,6 +24,7 @@ public class CountdownState : AbsState<GameStates>
         Time.timeScale = 1f;
 
         // Disable inputs
+        ServiceLocator.Instance.GetService<BattleManager>().SetCharacterInputStatus(false);
     }
 
     protected override void OnExit()
@@ -60,6 +61,7 @@ public class ActiveGameplayState : AbsState<GameStates>
     }
     protected override void OnEnter() {
         BattleManager.gameOver += ListenToGameOver;
+        ServiceLocator.Instance.GetService<BattleManager>().SetCharacterInputStatus(true);
     }
     protected override void OnExit()
     {
@@ -90,6 +92,7 @@ public class GameOverState : AbsState<GameStates>
 
         // Show the end-of-game UI
         ServiceLocator.Instance.GetService<MenuManager>().OpenMenu(Menus.EndBanner);
+        ServiceLocator.Instance.GetService<BattleManager>().SetCharacterInputStatus(false);
     }
     protected override void OnExit()
     {
