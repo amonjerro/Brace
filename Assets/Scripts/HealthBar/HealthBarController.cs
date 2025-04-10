@@ -33,6 +33,10 @@ public class HealthBarController : MonoBehaviour
 
     public void Update()
     {
+        if (DesiredValue > CurrentValue)
+        {
+            CurrentValue += 2 * ValueChangeRate * Time.deltaTime;
+        }
         if (DesiredValue < CurrentValue){
             CurrentValue -= ValueChangeRate * Time.deltaTime;
         }

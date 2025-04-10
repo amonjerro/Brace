@@ -4,14 +4,15 @@ namespace GameMenus
 {
     public class GameOverMenu : AbsMenu
     {
-        public override void OnShow()
+        public override void Close()
         {
-            Time.timeScale = 0.0f;
+            gameObject.SetActive(false);
         }
+
         public void RestartGame()
         {
-            ServiceLocator.Instance.GetService<MenuManager>().CloseMenu(Menus.GameEnd);
             ServiceLocator.Instance.GetService<BattleManager>().Reset();
+            ServiceLocator.Instance.GetService<MenuManager>().CloseMenu(Menus.GameEnd);
         }
     }
 }

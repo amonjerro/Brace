@@ -153,7 +153,6 @@ namespace GameMenus
                 menuManagerReference = ServiceLocator.Instance.GetService<MenuManager>();
             }
             if (gameObject.activeSelf) {
-                Debug.Log("Active self");
                 animator.SetTrigger(Constants.UIAnimationShow);
             }
         }

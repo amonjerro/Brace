@@ -22,11 +22,16 @@ public class CountdownState : AbsState<GameStates>
     {
         // Trigger countdown UI
         Time.timeScale = 1f;
+
         // Disable inputs
     }
 
     protected override void OnExit()
     {
+        // Reset state
+        countdownTimer = 0.0f;
+        countdownCondition.Reset();
+
         // Remove countdown UI
 
         // Enable inputs
@@ -59,6 +64,7 @@ public class ActiveGameplayState : AbsState<GameStates>
     protected override void OnExit()
     {
         BattleManager.gameOver -= ListenToGameOver;
+        gameEndCondition.Reset();
     }
     protected override void OnUpdate()
     {
@@ -81,7 +87,6 @@ public class GameOverState : AbsState<GameStates>
     }
     protected override void OnEnter()
     {
-        Debug.Log("Game is over!");
 
         // Show the end-of-game UI
         ServiceLocator.Instance.GetService<MenuManager>().OpenMenu(Menus.EndBanner);

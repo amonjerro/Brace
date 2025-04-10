@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 /// <summary>
 /// Handles the game state for battle
@@ -24,12 +25,18 @@ public class BattleManager : AbsGameService
 
     public void Reset()
     {
+        Debug.Log("Manager reset");   
         foreach (Character c in activeCharacters) { 
             c.Reset();
         }
 
         stateMachine.RestoreInitialState();
         stateMachine.CurrentState.Enter();
+    }
+
+    public void RegisterCharacter(Character character)
+    {
+        activeCharacters.Add(character);
     }
 
     public void SetupStateMachine()

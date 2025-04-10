@@ -41,7 +41,9 @@ public class CharacterInterface : MonoBehaviour
     // On start, this interface sets the status of the players based on incoming information
     void Start()
     {
+        BattleManager bm = ServiceLocator.Instance.GetService<BattleManager>();
         Character createdCharacter = Instantiate(CharacterPrefab, SpawnLocation, Quaternion.identity);
+
         if (controlType == ControlTypes.Player)
         {
             PlayerInput input = createdCharacter.gameObject.AddComponent<PlayerInput>();
@@ -54,7 +56,7 @@ public class CharacterInterface : MonoBehaviour
         }
         createdCharacter.SetHealthBarController(playerHealthBar);
         createdCharacter.SetInputBufferDebugger(inputDebugger);
-
+        bm.RegisterCharacter(createdCharacter);
 
     }
 }

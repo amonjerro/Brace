@@ -66,6 +66,8 @@ public class Character : MonoBehaviour
         currentHealth = MAX_HEALTH;
         healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
         stateMachine.RestoreInitialState();
+        bCanBeDamaged = true;
+
     }
 
     private void Initialize()
@@ -340,6 +342,10 @@ public class Character : MonoBehaviour
     public void SetInputToGame()
     {
         PlayerInput pi = GetComponent<PlayerInput>();
-        pi.SwitchCurrentActionMap("Player");
+        if (pi != null)
+        {
+            pi.SwitchCurrentActionMap("Player");
+        }
+        
     }
 }
