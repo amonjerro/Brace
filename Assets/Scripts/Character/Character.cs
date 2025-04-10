@@ -19,7 +19,9 @@ public class Character : MonoBehaviour
     bool isFlipped;
 
     [SerializeField]
-    float bufferDuration;
+    float _bufferDuration;
+
+    public float BufferDuration { get { return _bufferDuration; } }
 
     [SerializeField]
     int bufferSize;
@@ -88,7 +90,7 @@ public class Character : MonoBehaviour
     private void ConfigureInputBuffer()
     {
         InputBuffer.SetPriorities(InputConfig.MakePriorities());
-        inputBuffer = new InputBuffer(bufferDuration, bufferSize);
+        inputBuffer = new InputBuffer(_bufferDuration, bufferSize);
         bufferItem = new InputBufferItem();
     }
 

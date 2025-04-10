@@ -83,7 +83,7 @@ public class Bullet : MonoBehaviour
             // The bullet gets redirected on parry or reset on block by dealing half damage.
             Shield s = collision.gameObject.GetComponent<Shield>(); 
             if (s.IsParry) {
-                direction = -1 * direction;
+                direction = -2 * direction;
                 return;
             } else
             {

@@ -5,6 +5,7 @@ public enum AIControlTypes
     Blocker,
     Parrier,
     Shooter,
+    Random,
     FullAI
 }
 
@@ -22,6 +23,8 @@ public static class StrategyFactory
                 return new ShooterStrategy();
             case AIControlTypes.Jumper:
                 return new JumperStrategy();
+            case AIControlTypes.Random:
+                return new RandomStrategy();
             case AIControlTypes.Static:
             default:
                 return new StaticStrategy();

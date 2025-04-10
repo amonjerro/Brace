@@ -1,4 +1,7 @@
+using InputManagement;
+using UnityEngine;
 using UnityEngine.InputSystem;
+
 
 // AI behavior implemented through a strategy pattern
 // Sends inputs to the InputSystem handlers the character object has
@@ -6,7 +9,7 @@ public abstract class AbsAIStrategy
 {
     Character character;
     protected InputValue defaultInputValue = new InputValue();
-    public void SetCharacter(Character character)
+    public virtual void SetCharacter(Character character)
     {
         this.character = character;
     }
@@ -21,9 +24,16 @@ public abstract class AbsAIStrategy
         character.SendMessage("OnAttack", defaultInputValue);
     }
 
-    protected void Block()
+    protected void Block(bool value)
     {
-        character.SendMessage("OnBlock", defaultInputValue);
+        if (value)
+        {
+            character.SendMessage("BeginBlock");
+        } else
+        {
+            character.SendMessage("ReleaseBlock");
+        }
+        
     }
 
     public abstract void OnUpdate();
@@ -41,9 +51,12 @@ public class JumperStrategy : AbsAIStrategy
 // This AI only blocks
 public class BlockerStrategy : AbsAIStrategy
 {
+    bool isBlocking = false;
     public override void OnUpdate()
     {
-        Block();
+        Block(isBlocking);
+        isBlocking = !isBlocking;
+
     }
 }
 
@@ -62,5 +75,48 @@ public class StaticStrategy : AbsAIStrategy
     public override void OnUpdate()
     {
         return;
+    }
+}
+
+public class RandomStrategy : AbsAIStrategy
+{
+    bool isBlocking;
+    float timer;
+    float inputTickWindow;
+
+    public override void SetCharacter(Character character)
+    {
+        base.SetCharacter(character);
+        inputTickWindow = character.BufferDuration * 6;
+    }
+
+    public override void OnUpdate()
+    {
+        timer += Time.deltaTime;
+        if (timer > inputTickWindow) {
+            timer = 0.0f;
+            if (isBlocking)
+            {
+                isBlocking = false;
+                Block(false);
+                return;
+            }
+            EInput randomInput = (EInput)Random.Range(1, 4);
+            switch (randomInput)
+            {
+                case EInput.Fireball:
+                    Attack();
+                    break;
+                case EInput.Block:
+                    Block(true);
+                    isBlocking = true;
+                    break;
+                case EInput.Jump:
+                    Jump();
+                    break;
+                default:
+                    return;
+            }
+        }
     }
 }

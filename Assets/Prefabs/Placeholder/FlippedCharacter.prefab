@@ -314,7 +314,7 @@ MonoBehaviour:
   CharacterData: {fileID: 11400000, guid: 16c98da5913c9544586948fb021f3c72, type: 2}
   BlockingField: {fileID: 1433418557628284390}
   isFlipped: 1
-  bufferDuration: 0.05
+  _bufferDuration: 0.1
   bufferSize: 8
   currentState: 0
 --- !u!61 &6924697691713441160
