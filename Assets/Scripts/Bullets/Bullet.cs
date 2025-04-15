@@ -13,6 +13,7 @@ public class Bullet : MonoBehaviour
     // Bullet pool reference
     BulletPool pool;
 
+    // Component that governs how a bullet will move through the screen
     public KinematicComponent MovementComponent { get; private set; }
 
 
@@ -33,6 +34,10 @@ public class Bullet : MonoBehaviour
         MovementComponent = new KinematicComponent();
     }
 
+    /// <summary>
+    /// Increases a bullet's toughness. Should also apply the corresponding hardened sprite one layer up.
+    /// </summary>
+    /// <param name="sprite">The hardened sprite to use. Character dependent.</param>
     public void Harden(Sprite sprite)
     {
         bulletToughness++;
@@ -79,6 +84,10 @@ public class Bullet : MonoBehaviour
         bBulletInPlay = true;
     }
 
+    /// <summary>
+    /// Check whether for this bullet needs to be flipped.
+    /// Checked on launch and on parry.
+    /// </summary>
     public void CheckForSpriteFlip()
     {
         spriteRenderer.flipX = MovementComponent.direction.x < 0;

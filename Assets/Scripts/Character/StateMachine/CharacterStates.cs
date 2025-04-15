@@ -17,16 +17,27 @@ public abstract class PlayerState : AbsState<CharacterStates>{
         transitions = new Dictionary<CharacterStates, Transition<CharacterStates>>();
     }
 
+    /// <summary>
+    /// Sets the value of the input message to see if any input transitions have been triggered
+    /// </summary>
+    /// <param name="m">The InputMessage object</param>
     public void SetMessage(InputMessage m)
     {
         activeMessage = m;
     }
 
+    /// <summary>
+    /// Sets a reference to the character who owns this state machine and its corresponding states
+    /// </summary>
+    /// <param name="c"></param>
     public virtual void SetCharacter(Character c)
     {
         characterReference = c;
     }
 
+    /// <summary>
+    /// Clean up all transitions to prevent sticky states on reuse.
+    /// </summary>
     public void Flush()
     {
         activeMessage = null;
@@ -95,6 +106,8 @@ public class NeutralState : PlayerState
         }
 
         isPress.SetValue(!activeMessage.isRelease);
+
+        // Not a fan of a O(n) check happening every frame.
         foreach (KeyValuePair<CharacterStates,Transition<CharacterStates>> kvp in transitions) {
             if (kvp.Key == CharacterStates.Parrying)
             {
@@ -239,7 +252,6 @@ public class ParryingState : PlayerState
             characterReference.DisableBlock();
         }
 
-
         if (activeMessage != null)
         {
             activeMessage.consumed = true;
@@ -305,16 +317,16 @@ public class JumpingState : PlayerState
 
     protected override void OnExit()
     {
-        if (jumpCondition.Test())
+        // Transitioning to other mid-air jump states
+        if (jumpCondition.Test() || attackCondition.Test())
         {
             activeMessage.consumed = true;
+            Flush();
+            return;
         }
 
-        if (attackCondition.Test()) {
-            activeMessage.consumed = true;
-        }
+
         Flush();
-
         // Create landing particle system on grounded
     }
 

@@ -78,6 +78,8 @@ public class StaticStrategy : AbsAIStrategy
     }
 }
 
+// This AI takes a random action every 6 buffer frames
+// 6 is currently hardcoded - it might pay to make this a config variable
 public class RandomStrategy : AbsAIStrategy
 {
     bool isBlocking;
@@ -101,6 +103,8 @@ public class RandomStrategy : AbsAIStrategy
                 Block(false);
                 return;
             }
+
+            // Take a random input between Attack and Block.
             EInput randomInput = (EInput)Random.Range(1, 4);
             switch (randomInput)
             {

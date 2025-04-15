@@ -8,6 +8,7 @@ using UnityEngine;
 public class BulletPool : MonoBehaviour
 {
     [SerializeField]
+    [Tooltip("The general object for a bullet. This object can then be configured specifically by the shooter")]
     GameObject bulletPrefab;
 
     // Object pooling

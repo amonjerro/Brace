@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System;
-using UnityEngine;
 
 /// <summary>
 /// Handles the game state for battle
@@ -12,6 +11,8 @@ public class BattleManager : AbsGameService
 
     List<Character> activeCharacters;
 
+
+    /** Unity Lifecycle stuff **/
     private void Awake()
     {
         activeCharacters = new List<Character>();
@@ -23,6 +24,15 @@ public class BattleManager : AbsGameService
         SetupStateMachine();
     }
 
+    private void Update()
+    {
+        stateMachine.Update();
+    }
+
+
+    /// <summary>
+    /// Resets the fight to its initial state to allow for rematches
+    /// </summary>
     public void Reset()
     {
         foreach (Character c in activeCharacters) { 
@@ -33,11 +43,18 @@ public class BattleManager : AbsGameService
         stateMachine.CurrentState.Enter();
     }
 
+    /// <summary>
+    /// Register the currently active characters on screen
+    /// </summary>
+    /// <param name="character">The character being registered</param>
     public void RegisterCharacter(Character character)
     {
         activeCharacters.Add(character);
     }
 
+    /// <summary>
+    /// Set up the transitions and state objects for this service´s state machine
+    /// </summary>
     public void SetupStateMachine()
     {
         // Create the machine
@@ -54,21 +71,28 @@ public class BattleManager : AbsGameService
         stateMachine.SetStartingState(countdownState);
     }
 
-    private void Update()
-    {
-        stateMachine.Update();
-    }
-
+    /// <summary>
+    /// Set the game to over - might change accessibilty and functionality of this since this was created
+    /// before this class was made a service
+    /// </summary>
     public void SetGameToOver()
     {
         gameOver?.Invoke();
     }
 
+
+    /// <summary>
+    /// Perform service clean up
+    /// </summary>
     public override void CleanUp()
     {
         gameOver = null;
     }
 
+    /// <summary>
+    /// Enable or disable inputs for players, as needed
+    /// </summary>
+    /// <param name="val">What state to put inputs in</param>
     public void SetCharacterInputStatus(bool val)
     {
         foreach (Character c in activeCharacters)

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace InputManagement
 {
+    /// <summary>
+    /// Input configuration for move priority analysis. Fairly static.
+    /// </summary>
     [Serializable]
     [CreateAssetMenu(fileName = Constants.InputBufferSOFileName, menuName = Constants.ScriptableObjectsFolder + Constants.InputBufferSOFileName)]
     public class InputConfigSO : ScriptableObject
