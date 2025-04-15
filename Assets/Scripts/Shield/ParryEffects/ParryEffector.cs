@@ -51,6 +51,7 @@ public class SpeedUpEffector : AbsParryEffector
     public override void Apply(Bullet bullet)
     {
         bullet.MovementComponent.direction *= -1;
+        bullet.CheckForSpriteFlip();
         bullet.MovementComponent.speed *= 2;
     }
 }
@@ -62,6 +63,8 @@ public class HardenEffect : AbsParryEffector
     public override void Apply(Bullet bullet)
     {
         bullet.Harden(character.GetHardenedBullet());
+        bullet.MovementComponent.direction *= -1;
+        bullet.CheckForSpriteFlip();
     }
 }
 

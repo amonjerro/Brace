@@ -75,9 +75,13 @@ public class Bullet : MonoBehaviour
             spriteRenderer.sprite = bulletParams.bulletSprite;
             spriteRenderer.color = Color.white;
         }
-        spriteRenderer.flipX = MovementComponent.direction.x < 0;
-
+        CheckForSpriteFlip();
         bBulletInPlay = true;
+    }
+
+    public void CheckForSpriteFlip()
+    {
+        spriteRenderer.flipX = MovementComponent.direction.x < 0;
     }
 
     // Collision handler to determine what happens when this bullet hits something else
