@@ -11,7 +11,7 @@ public static class ParryFactory{
         switch (c.GetParryType())
         {
             case ParryEffect.SpeedUp:
-                return new SpeedUpEffector(c);
+                return new SpeedUpEffect(c);
             case ParryEffect.Harden:
                 return new HardenEffect(c);
             case ParryEffect.Absorb:
@@ -44,9 +44,9 @@ public class NoneEffect : AbsParryEffector
 }
 
 
-public class SpeedUpEffector : AbsParryEffector
+public class SpeedUpEffect : AbsParryEffector
 {
-    public SpeedUpEffector(Character c) : base(c) { }
+    public SpeedUpEffect(Character c) : base(c) { }
 
     public override void Apply(Bullet bullet)
     {
