@@ -73,6 +73,7 @@ public class Bullet : MonoBehaviour
 
         if (bulletParams.bulletSprite != null) {
             spriteRenderer.sprite = bulletParams.bulletSprite;
+            spriteRenderer.color = Color.white;
         }
         spriteRenderer.flipX = MovementComponent.direction.x < 0;
 

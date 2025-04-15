@@ -265,13 +265,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da76ccc0483dfe744aaad54baddd55eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: 0
   SpawnLocation: {x: 5, y: -3, z: 0}
   controlType: 1
   aiType: 5
   CharacterPrefab: {fileID: 4603212316668437401, guid: 515ff16262e94164f9821ad47274eea5, type: 3}
   defaultActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   playerHealthBar: {fileID: 154794517}
+  roster: {fileID: 11400000, guid: 72a811cf235c2104abfddb4bb84cd552, type: 2}
   inputDebugger: {fileID: 1249036208}
+  SceneTesting: 0
+  CharacterIndex: 0
 --- !u!114 &154794517 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8929340961839987331, guid: b4919c01db4a46a4f8f2f91c46c21560, type: 3}
@@ -1928,13 +1932,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da76ccc0483dfe744aaad54baddd55eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: 0
   SpawnLocation: {x: -5, y: -3, z: 0}
   controlType: 0
   aiType: 3
   CharacterPrefab: {fileID: 4603212316668437401, guid: ba3268a8a62a03f4195ee59c59068fb9, type: 3}
   defaultActionAsset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   playerHealthBar: {fileID: 1579646243}
+  roster: {fileID: 11400000, guid: 72a811cf235c2104abfddb4bb84cd552, type: 2}
   inputDebugger: {fileID: 1270739969}
+  SceneTesting: 0
+  CharacterIndex: 1
 --- !u!1 &1024334963
 GameObject:
   m_ObjectHideFlags: 0

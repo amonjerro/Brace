@@ -104,6 +104,11 @@ public class Character : MonoBehaviour
         charges--;
     }
 
+    public void SetCharacterData(CharacterSO data)
+    {
+        CharacterData = data;
+    }
+
     private void Initialize()
     {
         bulletPool = FindAnyObjectByType<BulletPool>();
@@ -127,7 +132,7 @@ public class Character : MonoBehaviour
     }
 
     // State machine setup
-    public void SetupStateMachine()
+    private void SetupStateMachine()
     {
         stateMachine = new StateMachine<CharacterStates>();
         

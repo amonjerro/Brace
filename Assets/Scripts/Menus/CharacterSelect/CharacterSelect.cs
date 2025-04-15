@@ -22,16 +22,19 @@ namespace GameMenus
         CharacterPanel rightCharacterPanel;
 
         Dictionary<(int, int), RectTransform> characterPortraits;
+        Dictionary<int, int> playerChoices;
+
         List<CharacterCursor> cursors;
 
         [SerializeField]
-        List<CharacterSO> characterData;
+        RosterSO roster;
 
         Dictionary<int, bool> playerReadyStatus;
 
         private void Start()
         {
             characterPortraits = new Dictionary<(int, int), RectTransform>();
+            playerChoices = new Dictionary<int, int>();
             cursors = new List<CharacterCursor>();
             playerReadyStatus = new Dictionary<int, bool>();
             Initialize();
@@ -67,7 +70,11 @@ namespace GameMenus
             RectTransform portraitTransform = characterPortraits[newLocation];
             RectTransform playerCursor = c.GetComponent<RectTransform>();
             playerCursor.position = portraitTransform.position;
-            UpdateCharacterProfile(cursors.IndexOf(c), FlattenLocationToIndex(newLocation));
+
+            int playerIndex = cursors.IndexOf(c);
+            int chosenCharacter = FlattenLocationToIndex(newLocation);
+            UpdateCharacterProfile(playerIndex,chosenCharacter);
+            playerChoices[playerIndex] = chosenCharacter;
         }
 
         public int GetPlayerIndex(CharacterCursor c)
@@ -80,6 +87,7 @@ namespace GameMenus
             cursors.Add(cursor);
             cursor.GetComponent<Image>().color = playerCursorColors[cursors.Count-1];
             playerReadyStatus.Add(cursors.Count-1, false);
+            playerChoices.Add(cursors.Count - 1, 0);
             UpdateCursorImageLocation(cursors[cursors.Count-1], (0, 0));
         }
 
@@ -88,6 +96,11 @@ namespace GameMenus
             playerReadyStatus[PlayerIndex] = ready;
             if (TestForGameStart())
             {
+                GameInstance.Player1Character = playerChoices[0] % roster.roster.Count;
+                if (playerChoices.ContainsKey(1)){
+                    GameInstance.Player2Character = playerChoices[1] % roster.roster.Count;
+                }
+
                 // Game Start Process
                 // Currently only loads you into next level, we could add a timer that can be interrupted to allow for players to back out
                 SceneTransitionManager.LoadScene(2);
@@ -115,10 +128,10 @@ namespace GameMenus
         {
             if (side == 0)
             {
-                leftCharacterPanel.UpdateCharacterPanel(characterData[index % characterData.Count]);
+                leftCharacterPanel.UpdateCharacterPanel(roster.roster[index % roster.roster.Count]);
             }
             else if (side == 1) { 
-                rightCharacterPanel.UpdateCharacterPanel(characterData[index % characterData.Count]);
+                rightCharacterPanel.UpdateCharacterPanel(roster.roster[index % roster.roster.Count]);
             }
         }
 

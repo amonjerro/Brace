@@ -11,6 +11,10 @@ public enum ControlTypes
 public class CharacterInterface : MonoBehaviour
 {
     [SerializeField]
+    [Tooltip("Which player this interface sets up")]
+    int PlayerIndex;
+
+    [SerializeField]
     [Tooltip("Where will this player spawn")]
     Vector3 SpawnLocation;
 
@@ -35,7 +39,19 @@ public class CharacterInterface : MonoBehaviour
     HealthBarController playerHealthBar;
 
     [SerializeField]
+    [Tooltip("The game's character roster")]
+    RosterSO roster;
+
+    [SerializeField]
     DebugInputBuffer inputDebugger;
+
+    [SerializeField]
+    [Tooltip("This variable should be turned on when doing testing within the fight scene and turned off for release")]
+    bool SceneTesting;
+
+    [SerializeField]
+    [Tooltip("When testing, this informs this character select which characters to load")]
+    int CharacterIndex;
 
 
     // On start, this interface sets the status of the players based on incoming information
@@ -43,6 +59,14 @@ public class CharacterInterface : MonoBehaviour
     {
         BattleManager bm = ServiceLocator.Instance.GetService<BattleManager>();
         Character createdCharacter = Instantiate(CharacterPrefab, SpawnLocation, Quaternion.identity);
+        if (SceneTesting)
+        {
+            createdCharacter.SetCharacterData(roster.roster[CharacterIndex]);
+        } else
+        {
+            createdCharacter.SetCharacterData(roster.roster[GameInstance.GetCharacterByPlayerIndex(PlayerIndex)]);
+        }
+        
 
         if (controlType == ControlTypes.Player)
         {

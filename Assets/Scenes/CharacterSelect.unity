@@ -2466,9 +2466,7 @@ MonoBehaviour:
   characterPortraitContainer: {fileID: 908466678}
   leftCharacterPanel: {fileID: 1609365050}
   rightCharacterPanel: {fileID: 2038790820}
-  characterData:
-  - {fileID: 11400000, guid: 16c98da5913c9544586948fb021f3c72, type: 2}
-  - {fileID: 11400000, guid: 986ae8785ffb76a408341e709dfd0f45, type: 2}
+  roster: {fileID: 11400000, guid: 72a811cf235c2104abfddb4bb84cd552, type: 2}
 --- !u!95 &1203871796
 Animator:
   serializedVersion: 7

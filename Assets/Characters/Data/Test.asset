@@ -22,10 +22,14 @@ MonoBehaviour:
     sprite: {fileID: 0}
     bulletParams:
       moveSpeed: 10
-      bulletSprite: {fileID: 0}
+      bulletSprite: {fileID: 21300000, guid: 2602e51b90862ce43944ede634c6e5d2, type: 3}
       bulletDamage: 1
     characterInfo:
       characterName: Glorbo
       fireballAbility: Pew Pew
       blockAbility: Block
       jumpAbility: Down Slam
+    shieldParams:
+      effect: 0
+      parrySprite: {fileID: 0}
+      hardenedBullet: {fileID: 0}

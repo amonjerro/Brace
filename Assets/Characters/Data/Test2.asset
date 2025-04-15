@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterParameters:
     jumpDuration: 1
-    jumpHeight: 1
-    shotCooldown: 1
-    attackDuration: 1
+    jumpHeight: 4
+    shotCooldown: 0.8
+    attackDuration: 1.2
     blockCooldown: 1
-    parryWindow: 0.02
+    parryWindow: 0.05
     sprite: {fileID: 0}
     bulletParams:
-      moveSpeed: 0
-      bulletSprite: {fileID: 0}
-      bulletDamage: 0
+      moveSpeed: 15
+      bulletSprite: {fileID: 21300000, guid: 160e6e4bd434d994398b20747d5e2f13, type: 3}
+      bulletDamage: 1
     characterInfo:
       characterName: Plumbo
       fireballAbility: Skrrrt
