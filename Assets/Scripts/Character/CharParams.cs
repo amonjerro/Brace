@@ -20,6 +20,7 @@ public struct CharParams
 
     public CharacterInfo characterInfo;
 
+    public ShieldParams shieldParams;
 }
 
 [Serializable]
@@ -28,6 +29,13 @@ public struct BulletParams
     public float moveSpeed;
     public Sprite bulletSprite;
     public float bulletDamage;
+}
+
+[Serializable]
+public struct ShieldParams {
+    public ParryEffect effect;
+    public Sprite parrySprite;
+    public Sprite hardenedBullet;
 }
 
 [Serializable]

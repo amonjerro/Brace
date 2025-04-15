@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using InputManagement;
 using GameMenus;
+using UnityEngine.Rendering.Universal;
 
 public class Character : MonoBehaviour
 {
@@ -44,6 +45,7 @@ public class Character : MonoBehaviour
     bool bCanBeDamaged = true;
 
     public bool IsGrounded {  get { return transform.position.y <= originalYPosition; } }
+    public bool ChargesAvailable {  get { return charges > 0; } }
 
     // Timers for game actions
     float blockTimer = 0;
@@ -52,6 +54,8 @@ public class Character : MonoBehaviour
     float blockCooldownSpeed = 0;
     float attackCooldown = 0;
     float attackCooldownSpeed = 0;
+
+    int charges = 0;
     
     // Constants
     const float TWO_PI = 2 * Mathf.PI;
@@ -64,6 +68,9 @@ public class Character : MonoBehaviour
         Initialize();
     }
 
+    /// <summary>
+    /// Resets the state of a player to its initial values
+    /// </summary>
     public void Reset()
     {
         currentHealth = MAX_HEALTH;
@@ -72,9 +79,29 @@ public class Character : MonoBehaviour
         bCanBeDamaged = true;
     }
 
+    /// <summary>
+    /// Sets the state of inputs for the players
+    /// </summary>
+    /// <param name="status"></param>
     public void SetInputStatus(bool status)
     {
         bInputsEnabled = status;
+    }
+
+    /// <summary>
+    /// Adds a charge counter
+    /// </summary>
+    public void AddCharge()
+    {
+        charges++;
+    }
+
+    /// <summary>
+    /// Spends a charge counter
+    /// </summary>
+    public void ExpendCharge()
+    {
+        charges--;
     }
 
     private void Initialize()
@@ -212,6 +239,21 @@ public class Character : MonoBehaviour
     public float GetParryWindow()
     {
         return CharacterData.characterParameters.parryWindow;
+    }
+
+    // Parry Information
+    public ParryEffect GetParryType()
+    {
+        return CharacterData.characterParameters.shieldParams.effect;
+    }
+    public Sprite GetParryPrite()
+    {
+        return CharacterData.characterParameters.shieldParams.parrySprite;
+    }
+
+    public Sprite GetHardenedBullet()
+    {
+        return CharacterData.characterParameters.shieldParams.hardenedBullet;
     }
 
     

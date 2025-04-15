@@ -6,10 +6,12 @@ public class Shield : MonoBehaviour
     bool _isParry;
     SpriteRenderer _spriteRenderer;
     Character character;
+    public AbsParryEffector effector;
 
     private void Start()
     {
         character = GetComponentInParent<Character>();
+        effector = ParryFactory.MakeParryFactory(character);
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 

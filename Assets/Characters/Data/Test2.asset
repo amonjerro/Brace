@@ -29,3 +29,7 @@ MonoBehaviour:
       fireballAbility: Skrrrt
       blockAbility: Stahp
       jumpAbility: Shazam
+    shieldParams:
+      effect: 1
+      parrySprite: {fileID: 0}
+      hardenedBullet: {fileID: 0}

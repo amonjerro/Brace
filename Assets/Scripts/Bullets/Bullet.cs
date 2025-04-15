@@ -1,3 +1,4 @@
+using Mono.Cecil.Cil;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -12,11 +13,13 @@ public class Bullet : MonoBehaviour
     // Bullet pool reference
     BulletPool pool;
 
+    public KinematicComponent MovementComponent { get; private set; }
+
+
     // Configuration parameters
-    Vector3 direction;
     SpriteRenderer spriteRenderer;
     float bulletDamage;
-    float moveSpeed;
+    int bulletToughness;
     
     // Lifecycle state
     bool bBulletInPlay;
@@ -27,7 +30,12 @@ public class Bullet : MonoBehaviour
         // Get a reference to the pool on start
         pool = GetComponentInParent<BulletPool>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        MovementComponent = new KinematicComponent();
+    }
 
+    public void Harden(Sprite sprite)
+    {
+        bulletToughness++;
     }
 
     // Update is called once per frame
@@ -41,7 +49,7 @@ public class Bullet : MonoBehaviour
 
         
         // Update the position based on the movement direction
-        transform.position += direction * moveSpeed * Time.deltaTime;
+        transform.position += MovementComponent.direction * MovementComponent.speed * Time.deltaTime;
         if (transform.position.x > maxX || transform.position.x < -maxX || transform.position.y > maxY || transform.position.y < -maxY)
         {
             pool.BulletReset(this);
@@ -53,20 +61,20 @@ public class Bullet : MonoBehaviour
     public void ResetBullet()
     {
         bBulletInPlay = false;
-        direction = Vector3.zero;
-        moveSpeed = 0;
     }
 
     // Ask the pool for a new bullet and get it ready to be gameplay-relevant
     public void Launch(BulletParams bulletParams, Vector3 fireDirection)
     {
-        direction = fireDirection;
-        moveSpeed = bulletParams.moveSpeed;
+        MovementComponent.direction = fireDirection;
+        MovementComponent.speed = bulletParams.moveSpeed;
         bulletDamage = bulletParams.bulletDamage;
+        bulletToughness = 1;
+
         if (bulletParams.bulletSprite != null) {
             spriteRenderer.sprite = bulletParams.bulletSprite;
         }
-        spriteRenderer.flipX = direction.x < 0;
+        spriteRenderer.flipX = MovementComponent.direction.x < 0;
 
         bBulletInPlay = true;
     }
@@ -82,13 +90,14 @@ public class Bullet : MonoBehaviour
         {
             // The bullet gets redirected on parry or reset on block by dealing half damage.
             Shield s = collision.gameObject.GetComponent<Shield>(); 
-            if (s.IsParry) {
-                direction = -2 * direction;
+            if (s.IsParry && bulletToughness == 1) {
+                s.effector.Apply(this);
                 return;
             } else
             {
                 Character chr = s.GetComponentInParent<Character>();
-                chr.TakeDamage(0.5f * bulletDamage);
+                chr.TakeDamage(0.5f * bulletDamage * bulletToughness);
+                bulletToughness = 1;
             }
         }
 
@@ -96,10 +105,20 @@ public class Bullet : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             Character chr = collision.gameObject.GetComponent<Character>();
-            chr.TakeDamage(bulletDamage);
+            chr.TakeDamage(bulletDamage * bulletToughness);
+            bulletToughness = 1;
         }
 
-        // Most collisions require the bullet to be sent back to the pool.
-        pool.BulletReset(this);
+        if (bulletToughness <= 1)
+        {
+            // Most collisions require the bullet to be sent back to the pool.
+            pool.BulletReset(this);
+        }
+        else
+        {
+            bulletToughness--;
+        }
+
+
     }
 }
