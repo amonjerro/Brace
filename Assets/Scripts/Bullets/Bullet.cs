@@ -54,7 +54,7 @@ public class Bullet : MonoBehaviour
 
         
         // Update the position based on the movement direction
-        transform.position += MovementComponent.direction * MovementComponent.speed * Time.deltaTime;
+        transform.position += MovementComponent.direction * MovementComponent.speed * TimeUtil.GetDelta();
         if (transform.position.x > maxX || transform.position.x < -maxX || transform.position.y > maxY || transform.position.y < -maxY)
         {
             pool.BulletReset(this);

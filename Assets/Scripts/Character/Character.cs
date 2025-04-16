@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using InputManagement;
 using GameMenus;
+using System;
 
 public class Character : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class Character : MonoBehaviour
     [SerializeField]
     [Tooltip("Read-only for state machine debugging purposes")]
     CharacterStates currentState;
+
+    public static Action DamageTaken;
 
     // Internals
     HealthBarController healthBarController;
@@ -76,7 +79,7 @@ public class Character : MonoBehaviour
         currentState = stateMachine.GetCurrentState();
         UpdateTimersAndUI();
         inputBufferDebug.Print(inputBuffer);
-        inputBuffer.Update(Time.deltaTime);
+        inputBuffer.Update(TimeUtil.GetDelta());
 
         //Input Buffer logic
         if (inputBuffer.PushFlag)
@@ -252,6 +255,7 @@ public class Character : MonoBehaviour
         }
         currentHealth -= value;
         healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
+        DamageTaken?.Invoke();
         if (currentHealth <= 0)
         {
             // End Game
@@ -375,9 +379,9 @@ public class Character : MonoBehaviour
     // Updates all cooldowns and informs the UI of any relevant changes
     private void UpdateTimersAndUI()
     {
-        attackCooldown -= Time.deltaTime * attackCooldownSpeed;
-        blockTimer += Time.deltaTime * blockUptickSpeed;
-        blockCooldownTimer -= Time.deltaTime * blockCooldownSpeed;
+        attackCooldown -= TimeUtil.GetDelta() * attackCooldownSpeed;
+        blockTimer += TimeUtil.GetDelta() * blockUptickSpeed;
+        blockCooldownTimer -= TimeUtil.GetDelta() * blockCooldownSpeed;
 
         if (attackCooldown <= 0)
         {

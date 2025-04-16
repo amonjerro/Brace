@@ -156,7 +156,7 @@ public class AttackingState : PlayerState
 
     protected override void OnUpdate()
     {
-        timer += Time.deltaTime;
+        timer += TimeUtil.GetDelta();
         toNeutral.SetValue(timer);
     }
 }
@@ -265,7 +265,7 @@ public class ParryingState : PlayerState
 
     protected override void OnUpdate()
     {
-        timer += Time.deltaTime;
+        timer += TimeUtil.GetDelta();
         parryTimeCondition.SetValue(timer);
 
         // If no input is being processed return
@@ -336,7 +336,7 @@ public class JumpingState : PlayerState
     protected override void OnUpdate()
     {
         // Update the characters vertical position
-        timer += Time.deltaTime;
+        timer += TimeUtil.GetDelta();
         characterReference.HandleJumpUpdate(timer);
 
         // Check for grounded
@@ -379,7 +379,7 @@ public class DownJumpingState : PlayerState
 
     protected override void OnUpdate()
     {
-        timer += Time.deltaTime;
+        timer += TimeUtil.GetDelta();
         characterReference.HandleDownJumpUpdate(timer);
         groundCondition.SetValue(characterReference.IsGrounded);
     }
@@ -419,7 +419,7 @@ public class JumpAttackState : PlayerState
 
     protected override void OnUpdate()
     {
-        timer += Time.deltaTime;
+        timer += TimeUtil.GetDelta();
         toJumpCondition.SetValue(timer);
     }
 }

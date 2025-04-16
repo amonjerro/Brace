@@ -1,14 +1,19 @@
 using System.Collections.Generic;
+using System.Collections;
 using System;
+using UnityEngine;
 
 /// <summary>
 /// Handles the game state for battle
 /// </summary>
 public class BattleManager : AbsGameService
 {
+    [SerializeField]
+    [Tooltip("The duration of hit stop time freeze in seconds")]
+    float hitStopTime;
+
     StateMachine<GameStates> stateMachine;
     public static Action gameOver;
-
     List<Character> activeCharacters;
 
 
@@ -21,11 +26,14 @@ public class BattleManager : AbsGameService
 
     public void Start()
     {
+        Character.DamageTaken += ReactToDamageTaken;
+        TimeUtil.Initialize();
         SetupStateMachine();
     }
 
     private void Update()
     {
+        TimeUtil.UpdateDeltaTime();
         stateMachine.Update();
     }
 
@@ -39,6 +47,7 @@ public class BattleManager : AbsGameService
             c.Reset();
         }
 
+        TimeUtil.Initialize();
         stateMachine.RestoreInitialState();
         stateMachine.CurrentState.Enter();
     }
@@ -50,6 +59,7 @@ public class BattleManager : AbsGameService
     public void RegisterCharacter(Character character)
     {
         activeCharacters.Add(character);
+        
     }
 
     /// <summary>
@@ -86,6 +96,7 @@ public class BattleManager : AbsGameService
     /// </summary>
     public override void CleanUp()
     {
+        Character.DamageTaken -= ReactToDamageTaken;
         gameOver = null;
     }
 
@@ -99,5 +110,18 @@ public class BattleManager : AbsGameService
         {
             c.SetInputStatus(val);
         }
+    }
+
+    public void ReactToDamageTaken()
+    {
+        StartCoroutine(RunHitstop());
+    }
+
+    // Stops the game for the duration of hit stop to add that juicy feel
+    IEnumerator RunHitstop()
+    {
+        TimeUtil.timeScale = 0.0f;
+        yield return new WaitForSeconds(hitStopTime);
+        TimeUtil.timeScale = 1.0f;
     }
 }
