@@ -1,3 +1,4 @@
+using UnityEngine;
 namespace GameMenus
 {
     /// <summary>
@@ -5,6 +6,14 @@ namespace GameMenus
     /// </summary>
     public class MainMenu : AbsMenu
     {
+        [SerializeField]
+        LevelDataSOs LevelData;
+
+        public void Awake()
+        {
+            GameInstance.selectedLevel = LevelData.Find(Levels.MainMenu);
+        }
+
         public void Start()
         {
             menuManagerReference = ServiceLocator.Instance.GetService<MenuManager>();

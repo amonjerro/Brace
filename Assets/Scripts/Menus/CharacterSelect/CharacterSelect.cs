@@ -31,6 +31,9 @@ namespace GameMenus
         [Tooltip("The character roster, which contains all relevant character data")]
         RosterSO roster;
 
+        [SerializeField]
+        LevelDataSOs LevelData;
+
         // Internals
         Dictionary<(int, int), RectTransform> characterPortraits;
         Dictionary<int, int> playerChoices;
@@ -76,6 +79,10 @@ namespace GameMenus
         }
         #endregion
 
+        public void Awake()
+        {
+            GameInstance.selectedLevel = LevelData.Find(Levels.MainMenu);
+        }
 
         private void Start()
         {
