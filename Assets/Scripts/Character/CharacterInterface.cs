@@ -55,10 +55,15 @@ public class CharacterInterface : MonoBehaviour
 
 
     // On start, this interface sets the status of the players based on incoming information
+    // from the game instance
+
+    // This can be reworked to easily create a demo-mode that runs from the main menu
     void Start()
     {
         BattleManager bm = ServiceLocator.Instance.GetService<BattleManager>();
         Character createdCharacter = Instantiate(CharacterPrefab, SpawnLocation, Quaternion.identity);
+        
+        // Debug and development logic
         if (SceneTesting)
         {
             createdCharacter.SetCharacterData(roster.roster[CharacterIndex]);
@@ -67,20 +72,23 @@ public class CharacterInterface : MonoBehaviour
             createdCharacter.SetCharacterData(roster.roster[GameInstance.GetCharacterByPlayerIndex(PlayerIndex)]);
         }
         
-
+        
         if (controlType == ControlTypes.Player)
         {
+            // Player setup
             PlayerInput input = createdCharacter.gameObject.AddComponent<PlayerInput>();
             input.actions = defaultActionAsset;
             createdCharacter.SetInputToGame();
         } else
         {
+            // AI setup
             AIController controller = createdCharacter.gameObject.AddComponent<AIController>();
             controller.SetStrategy(aiType);
         }
+
+        // Configure the state for characters
         createdCharacter.SetHealthBarController(playerHealthBar);
         createdCharacter.SetInputBufferDebugger(inputDebugger);
         bm.RegisterCharacter(createdCharacter);
-
     }
 }

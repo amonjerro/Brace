@@ -34,7 +34,7 @@ public class CharacterCursor : MonoBehaviour
         GameObject go = GameObject.Find("CharacterSelectMenu");
         characterSelect = go.GetComponent<CharacterSelect>();
         transform.SetParent(characterSelect.transform, false);
-        characterSelect.SpawnCursor(this);
+        characterSelect.HandleCursorSpawn(this);
         PlayerInput pi = gameObject.GetComponent<PlayerInput>();
         pi.SwitchCurrentActionMap("UI");
         PlayerId = characterSelect.GetPlayerIndex(this);

@@ -91,6 +91,8 @@ public class NeutralState : PlayerState
         {
             activeMessage.consumed = true;
         }
+
+
         if (transitions[CharacterStates.Parrying].GetCondition().Test())
         {
             machine.StackState(this);
@@ -208,7 +210,7 @@ public class ParryingState : PlayerState
 {
     EqualsCondition<EInput> inputCondition;
     EqualsCondition<bool> releaseCondition;
-    GreaterThanCondition<float> greaterThanCondition;
+    GreaterThanCondition<float> parryTimeCondition;
     float timer = 0;
     public ParryingState(StateMachine<CharacterStates> s) : base(s)
     {
@@ -228,9 +230,9 @@ public class ParryingState : PlayerState
     public override void SetCharacter(Character c)
     {
         base.SetCharacter(c);
-        greaterThanCondition = new GreaterThanCondition<float>(c.GetParryWindow());
+        parryTimeCondition = new GreaterThanCondition<float>(c.GetParryWindow());
         Transition<CharacterStates> toBlocking = new Transition<CharacterStates>();
-        toBlocking.SetCondition(greaterThanCondition);
+        toBlocking.SetCondition(parryTimeCondition);
         transitions.Add(CharacterStates.Blocking, toBlocking);
     }
 
@@ -245,8 +247,9 @@ public class ParryingState : PlayerState
 
     protected override void OnExit()
     {
-        if (!greaterThanCondition.Test())
+        if (!parryTimeCondition.Test())
         {
+            // Block has been released. Return to neutral state
             transitions[CharacterStates.Neutral].TargetState = machine.UnstackState();
             characterReference.SetBlockToParry(false);
             characterReference.DisableBlock();
@@ -263,7 +266,7 @@ public class ParryingState : PlayerState
     protected override void OnUpdate()
     {
         timer += Time.deltaTime;
-        greaterThanCondition.SetValue(timer);
+        parryTimeCondition.SetValue(timer);
 
         // If no input is being processed return
         if (activeMessage == null) {

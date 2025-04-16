@@ -1,22 +1,38 @@
 
 using GameMenus;
 using InputManagement;
-using UnityEngine;
 
+
+/// <summary>
+/// Abstract player cursor state
+/// Processes player input and handles how that processing changes based on context
+/// </summary>
 public abstract class CursorState : AbsState<CharacterCursorStates> {
     protected CharacterCursor cursor;
     protected InputMessage inputMessage;
-
+    
+    /// <summary>
+    /// State machine requires a reference to the owning object
+    /// </summary>
+    /// <param name="cursor"></param>
     public CursorState(CharacterCursor cursor)
     {
         this.cursor = cursor;
         transitions = new System.Collections.Generic.Dictionary<CharacterCursorStates, Transition<CharacterCursorStates>>();
     }
 
+    /// <summary>
+    /// Set the input message to evaluate
+    /// </summary>
+    /// <param name="m"></param>
     public void SetMessage(InputMessage m) {
         inputMessage = m;
     }
 
+
+    /// <summary>
+    /// Resets the state to prevent sticky states
+    /// </summary>
     protected void Flush()
     {
         inputMessage = null;
@@ -24,6 +40,9 @@ public abstract class CursorState : AbsState<CharacterCursorStates> {
 
 }
 
+/// <summary>
+/// State that handles the cursor behavior for when the player is actively choosing a character
+/// </summary>
 public class ChoosingState : CursorState
 {
     EqualsCondition<EInput> readyInput;
@@ -78,6 +97,9 @@ public class ChoosingState : CursorState
     }
 }
 
+/// <summary>
+/// State that handles the player being ready or backing out of ready status
+/// </summary>
 public class ReadyState : CursorState
 {
     EqualsCondition<EInput> choosingInput;

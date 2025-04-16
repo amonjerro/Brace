@@ -42,20 +42,36 @@ public class StateMachine<EState> where EState : System.Enum
         _currentState = state;
     }
 
+    /// <summary>
+    /// Gets the active state in this state machine
+    /// </summary>
+    /// <returns></returns>
     public EState GetCurrentState()
     {
         return _currentState.GetStateValue();
     }
 
+    /// <summary>
+    /// Stack a state in the state machine. Useful to temporarily create a "save point" for the state machine
+    /// </summary>
+    /// <param name="state">The state to stack</param>
     public void StackState(AbsState<EState> state)
     {
         stateStack.Push(state);
     }
+
+    /// <summary>
+    /// Unstack a state from the state machine
+    /// </summary>
+    /// <returns>The unstacked state</returns>
     public AbsState<EState> UnstackState()
     {
         return stateStack.Pop();
     }
 
+    /// <summary>
+    /// Restore this state machine to its original state.
+    /// </summary>
     public void RestoreInitialState()
     {
         _currentState = _startingState;

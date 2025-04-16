@@ -1,8 +1,8 @@
-using UnityEngine;
-using UnityEngine.UIElements;
-
 namespace GameMenus
 {
+    /// <summary>
+    /// The main menu screen. Currently very barebones
+    /// </summary>
     public class MainMenu : AbsMenu
     {
         public void Start()

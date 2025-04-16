@@ -13,6 +13,9 @@ namespace InputManagement
     {
         public List<PriorityPair> priorityPairs = new List<PriorityPair>();
 
+        // Create the priorities lookup map
+        // Priorities indicate to the input buffer which input should be treated as active if multiple
+        // unacknowledged inputs exist within the buffer. Lowest priority wins.
         public Dictionary<EInput, int> MakePriorities()
         {
             Dictionary<EInput, int> result = new Dictionary<EInput, int> ();
@@ -25,6 +28,9 @@ namespace InputManagement
         }
     }
 
+    /// <summary>
+    /// Struct for listing pairs of input to priorities in the Scriptable Object.
+    /// </summary>
     [Serializable]
     public struct PriorityPair
     {

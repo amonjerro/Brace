@@ -6,24 +6,38 @@ public enum CooldownType
     Shoot
 }
 
+
+/// <summary>
+/// Class that shows the health bars at the top of the screen. Currently does not work as a Canvas object and likely should.
+/// </summary>
 public class HealthBarController : MonoBehaviour
 {
     [SerializeField]
+    [Tooltip("The sprite renderer for the life bar")]
     SpriteRenderer healthBarRenderer;
+
     [SerializeField]
+    [Tooltip("The sprite renderer for the jump action button")]
     SpriteRenderer jumpActionSpriteRenderer;
+    
     [SerializeField]
+    [Tooltip("The sprite renderer for the attack action button")]
     SpriteRenderer shootActionSpriteRenderer;
+    
     [SerializeField]
+    [Tooltip("The sprite renderer for the block action button")]
     SpriteRenderer blockActionSpriteRenderer;
 
     [SerializeField]
     [Range(0f, 0.5f)]
+    [Tooltip("How fast health updates over time")]
     float ValueChangeRate;
 
+    // Internals
     float CurrentValue;
     float DesiredValue;
 
+    #region UNITY_LIFECYCLE
     private void Awake()
     {
         CurrentValue = 1f;
@@ -42,6 +56,8 @@ public class HealthBarController : MonoBehaviour
         }
         healthBarRenderer.material.SetFloat("_HealthRemaining", CurrentValue);
     }
+    #endregion
+
 
     // Updates the desired value of the health to allow for gradual decrease of health in the UI
     public void UpdateHealth(float value)

@@ -1,4 +1,3 @@
-using Mono.Cecil.Cil;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -19,6 +18,7 @@ public class Bullet : MonoBehaviour
 
     // Configuration parameters
     SpriteRenderer spriteRenderer;
+    SpriteRenderer hardenedRenderer;
     float bulletDamage;
     int bulletToughness;
     
@@ -38,7 +38,7 @@ public class Bullet : MonoBehaviour
     /// Increases a bullet's toughness. Should also apply the corresponding hardened sprite one layer up.
     /// </summary>
     /// <param name="sprite">The hardened sprite to use. Character dependent.</param>
-    public void Harden(Sprite sprite)
+    public void Harden()
     {
         bulletToughness++;
     }

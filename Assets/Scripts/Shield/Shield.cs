@@ -3,6 +3,7 @@ using UnityEngine;
 [RequireComponent (typeof(SpriteRenderer))]
 public class Shield : MonoBehaviour
 {
+    // Internals
     bool _isParry;
     SpriteRenderer _spriteRenderer;
     Character character;
@@ -25,6 +26,9 @@ public class Shield : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Property to expose whether the shield is in parry state or not
+    /// </summary>
     public bool IsParry
     {
         get

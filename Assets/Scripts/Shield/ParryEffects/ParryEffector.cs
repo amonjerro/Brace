@@ -62,7 +62,7 @@ public class HardenEffect : AbsParryEffector
 
     public override void Apply(Bullet bullet)
     {
-        bullet.Harden(character.GetHardenedBullet());
+        bullet.Harden();
         bullet.MovementComponent.direction *= -1;
         bullet.CheckForSpriteFlip();
     }

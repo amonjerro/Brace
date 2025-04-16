@@ -23,21 +23,24 @@ public struct CharParams
     public ShieldParams shieldParams;
 }
 
+// Parameters to govern projectile behavior for each character
 [Serializable]
 public struct BulletParams
 {
     public float moveSpeed;
     public Sprite bulletSprite;
     public float bulletDamage;
+    public Sprite hardenedBullet;
 }
 
+// Parameters to govern the shield behavior for each character
 [Serializable]
 public struct ShieldParams {
     public ParryEffect effect;
     public Sprite parrySprite;
-    public Sprite hardenedBullet;
 }
 
+// Descriptions for the character select screen
 [Serializable]
 public struct CharacterInfo
 {

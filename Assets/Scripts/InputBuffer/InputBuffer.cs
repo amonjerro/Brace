@@ -1,8 +1,15 @@
 using System.Collections.Generic;
 
 namespace InputManagement {
+
+    /// <summary>
+    /// Input Buffer class
+    /// Holds input information for a configurable amount of time to prevent inputs from being dropped
+    /// Important for networking and ensuring deterministic behavior in the game
+    /// </summary>
     public class InputBuffer
     {
+        // Internals
         float bufferCounter;
         int bufferLength;
         float inputDuration;
@@ -22,6 +29,10 @@ namespace InputManagement {
             return priorities[type];
         }
 
+        /// <summary>
+        /// Sets the move priority configuration for this buffer
+        /// </summary>
+        /// <param name="pairings">Priority pairings</param>
         public static void SetPriorities(Dictionary<EInput, int> pairings)
         {
             priorities = pairings;
@@ -65,8 +76,10 @@ namespace InputManagement {
         // Push a new frame into the buffer
         public void Push(InputBufferItem item)
         {
+            // Immediately set the flag to 0
             ToggleFlag();
 
+            // Pop something from the queue if the queue is full
             if (inputQueue.Count >= bufferLength)
             {
                 InputBufferItem ibi = inputQueue.Dequeue();
@@ -76,9 +89,12 @@ namespace InputManagement {
                 }
             }
 
+            // Set the winning action if a buffer item contains more than one action
             if (!item.WinningActionSet) {
                 item.FindWinningAction();
             }
+
+            // Enqueue the passed item
             inputQueue.Enqueue(item);
         }
 
@@ -100,7 +116,7 @@ namespace InputManagement {
                     continue;
                 }
 
-
+                // This should access cached information. It will not run the whole find process again
                 contenderAction = ibi.FindWinningAction();
                 
                 // Update the buffer item if this action has been consumed

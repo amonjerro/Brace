@@ -36,6 +36,9 @@ public class ServiceLocator : MonoBehaviour
         return component;
     }
 
+    /// <summary>
+    /// Clean up all services this locator has accessed
+    /// </summary>
     public void RunServiceCleanup()
     {
         foreach (AbsGameService absGameService in serviceCache.Values) {

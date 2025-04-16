@@ -2,32 +2,34 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using InputManagement;
 using GameMenus;
-using UnityEngine.Rendering.Universal;
 
 public class Character : MonoBehaviour
 {
     // Dependency Configurations
     [SerializeField]
+    [Tooltip("Input Configuration Scriptable Object to inform how priorities are configured")]
     InputConfigSO InputConfig;
 
     [SerializeField]
-    CharacterSO CharacterData;
-
-    [SerializeField]
+    [Tooltip("The game object that corresponds to the shield for this character")]
     Shield BlockingField;
 
     [SerializeField]
+    [Tooltip("Whether this character sprite should be mirrored. Relevant for the right side character.")]
     bool isFlipped;
 
     [SerializeField]
+    [Tooltip("Duration in seconds for each input buffer frame")]
     float _bufferDuration;
 
     public float BufferDuration { get { return _bufferDuration; } }
 
     [SerializeField]
+    [Tooltip("How many buffer frames should be contained in the input buffer")]
     int bufferSize;
 
     [SerializeField]
+    [Tooltip("Read-only for state machine debugging purposes")]
     CharacterStates currentState;
 
     // Internals
@@ -36,6 +38,7 @@ public class Character : MonoBehaviour
     InputBufferItem bufferItem;
     StateMachine<CharacterStates> stateMachine;
     DebugInputBuffer inputBufferDebug;
+    CharacterSO CharacterData;
 
     // Base values
     Vector3 forward3;
@@ -54,7 +57,6 @@ public class Character : MonoBehaviour
     float blockCooldownSpeed = 0;
     float attackCooldown = 0;
     float attackCooldownSpeed = 0;
-
     int charges = 0;
     
     // Constants
@@ -63,9 +65,36 @@ public class Character : MonoBehaviour
     float currentHealth = 5.0f;
 
     // Unity lifecycle // 
+    #region UNITY_LIFECYCLE
     private void Start()
     {
         Initialize();
+    }
+
+    private void Update()
+    {
+        currentState = stateMachine.GetCurrentState();
+        UpdateTimersAndUI();
+        inputBufferDebug.Print(inputBuffer);
+        inputBuffer.Update(Time.deltaTime);
+
+        //Input Buffer logic
+        if (inputBuffer.PushFlag)
+        {
+            inputBuffer.Push(bufferItem);
+            bufferItem = new InputBufferItem();
+        }
+        inputBuffer.UpdateActiveMessage();
+
+        // Pass the message to the state machine
+        if (inputBuffer.GetActiveMessage() != null)
+        {
+            PlayerState s = (PlayerState)stateMachine.CurrentState;
+            s.SetMessage(inputBuffer.GetActiveMessage());
+        }
+
+        stateMachine.Update();
+
     }
 
     /// <summary>
@@ -78,7 +107,28 @@ public class Character : MonoBehaviour
         stateMachine.RestoreInitialState();
         bCanBeDamaged = true;
     }
+    #endregion
 
+    #region DEPENDENCY_SETUP
+    // Character state access functions //
+
+    public void SetHealthBarController(HealthBarController controller)
+    {
+        healthBarController = controller;
+    }
+
+    public void SetInputBufferDebugger(DebugInputBuffer debugger)
+    {
+        inputBufferDebug = debugger;
+    }
+
+    public void SetCharacterData(CharacterSO data)
+    {
+        CharacterData = data;
+    }
+    #endregion
+
+    #region GAME_STATE_HANDLING
     /// <summary>
     /// Sets the state of inputs for the players
     /// </summary>
@@ -86,6 +136,19 @@ public class Character : MonoBehaviour
     public void SetInputStatus(bool status)
     {
         bInputsEnabled = status;
+    }
+
+    /// <summary>
+    /// Set the control of player inputs back to game mode
+    /// </summary>
+    public void SetInputToGame()
+    {
+        PlayerInput pi = GetComponent<PlayerInput>();
+        if (pi != null)
+        {
+            pi.SwitchCurrentActionMap("Player");
+        }
+
     }
 
     /// <summary>
@@ -104,11 +167,138 @@ public class Character : MonoBehaviour
         charges--;
     }
 
-    public void SetCharacterData(CharacterSO data)
+    /// <summary>
+    /// Allows the state machine to update this object's vertical position
+    /// </summary>
+    /// <param name="value">The time parameter to pass</param>
+    public void HandleJumpUpdate(float jumpTimer)
     {
-        CharacterData = data;
+
+        float yPosition = MathUtils.ParabolicPosition(
+                                        jumpTimer, originalYPosition, 
+                                        CharacterData.characterParameters.jumpDuration, 
+                                        CharacterData.characterParameters.jumpHeight
+                                        );
+        transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
     }
 
+    /// <summary>
+    /// Allows the state machine to update this object's vertical position with regards to down jumping
+    /// </summary>
+    /// <param name="newYValue">The new Y value for this object</param>
+    public void HandleDownJumpUpdate(float newYValue)
+    {
+        float adjustedValue = transform.position.y - newYValue;
+        transform.position = new Vector3(transform.position.x, adjustedValue, transform.position.z);
+    }
+
+    /// <summary>
+    /// Resets this object's height to the original value
+    /// </summary>
+    public void ResetHeight()
+    {
+        transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
+    }
+    #endregion
+
+    #region DATA_ACCESSORS
+    /// <summary>
+    /// Provide access to the duration in seconds of the attack animation
+    /// </summary>
+    /// <returns></returns>
+    public float GetAttackDuration()
+    {
+        return CharacterData.characterParameters.attackDuration;
+    }
+
+    /// <summary>
+    /// Get the duration of the parry window for this character
+    /// </summary>
+    /// <returns>The parry window in seconds</returns>
+    public float GetParryWindow()
+    {
+        return CharacterData.characterParameters.parryWindow;
+    }
+
+    /// <summary>
+    /// Get the type of parry effect this character has
+    /// </summary>
+    /// <returns>The type of parry effect they apply</returns>
+    public ParryEffect GetParryType()
+    {
+        return CharacterData.characterParameters.shieldParams.effect;
+    }
+
+    /// <summary>
+    /// Get the sprite for this character parry animation
+    /// </summary>
+    /// <returns></returns>
+    public Sprite GetParrySprite()
+    {
+        return CharacterData.characterParameters.shieldParams.parrySprite;
+    }
+    #endregion
+
+    #region GAMEPLAY_FUNCTIONS
+    // Gameplay functions //
+
+    // Change the player's life total based on the damage they've taken.
+    // Show feedback to the player that damage has been done
+    public void TakeDamage(float value)
+    {
+        if (!bCanBeDamaged)
+        {
+            return;
+        }
+        currentHealth -= value;
+        healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
+        if (currentHealth <= 0)
+        {
+            // End Game
+            bCanBeDamaged = false;
+            ServiceLocator.Instance.GetService<BattleManager>().SetGameToOver();
+        }
+    }
+
+    /// <summary>
+    /// Request a projectile from the pool, initialize it and send it on its way
+    /// </summary>
+    public void ThrowFireball()
+    {
+        Bullet b = bulletPool.GetBullet().GetComponent<Bullet>();
+        b.transform.position = transform.position + forward3 + (forward3 * 0.1f);
+        b.Launch(CharacterData.characterParameters.bulletParams, forward3);
+        attackCooldown = CharacterData.characterParameters.shotCooldown;
+        attackCooldownSpeed = 1.0f; // To do: Replace this hardcoded number
+    }
+
+    // Handle Blocking //
+    // i.e. manipulate the Shield object's state
+    public void EnableBlock()
+    {
+        BlockingField.gameObject.SetActive(true);
+    }
+
+    public void SetBlockToParry(bool value)
+    {
+        BlockingField.IsParry = value;
+    }
+
+    public void DisableBlock()
+    {
+        BlockingField.gameObject.SetActive(false);
+    }
+    #endregion
+
+
+    #region PRIVATE_FUNCTIONS
+    // Private Functions //
+
+    /// <summary>
+    /// Set references, create and populate the state machine, configure the input buffer and suscribe to menu events
+    /// Any initialization and resource acquisition should happen here.
+    /// Called on Start, not on Awake.
+    /// </summary>
     private void Initialize()
     {
         bulletPool = FindAnyObjectByType<BulletPool>();
@@ -124,6 +314,9 @@ public class Character : MonoBehaviour
         MenuManager.UIInputSwitch += SetInputToUI;
     }
 
+    /// <summary>
+    /// Create and configure the input buffer based on scriptable object configuration settings.
+    /// </summary>
     private void ConfigureInputBuffer()
     {
         InputBuffer.SetPriorities(InputConfig.MakePriorities());
@@ -135,7 +328,7 @@ public class Character : MonoBehaviour
     private void SetupStateMachine()
     {
         stateMachine = new StateMachine<CharacterStates>();
-        
+
         // Create states
         NeutralState neutral = new NeutralState(stateMachine);
         neutral.SetCharacter(this);
@@ -165,7 +358,7 @@ public class Character : MonoBehaviour
         neutral.transitions[CharacterStates.Parrying].TargetState = parry;
 
         attacking.transitions[CharacterStates.Neutral].TargetState = neutral;
-        
+
         jumping.transitions[CharacterStates.DownJumping].TargetState = down;
         jumping.transitions[CharacterStates.Neutral].TargetState = neutral;
         jumping.transitions[CharacterStates.JumpAttack].TargetState = jumpAttack;
@@ -177,108 +370,7 @@ public class Character : MonoBehaviour
 
         // Set ground state
         stateMachine.SetStartingState(neutral);
-    }
-
-    private void Update()
-    {
-        currentState = stateMachine.GetCurrentState();
-        UpdateTimersAndUI();
-        inputBufferDebug.Print(inputBuffer);
-        inputBuffer.Update(Time.deltaTime);
-
-        //Input Buffer logic
-        if (inputBuffer.PushFlag)
-        {
-            inputBuffer.Push(bufferItem);
-            bufferItem = new InputBufferItem();
-        }
-        inputBuffer.UpdateActiveMessage();
-
-        // Pass the message to the state machine
-        if (inputBuffer.GetActiveMessage() != null)
-        {
-            PlayerState s = (PlayerState)stateMachine.CurrentState;
-            s.SetMessage(inputBuffer.GetActiveMessage());
-        }
-
-        stateMachine.Update();
-        
-    }
-
-    /// <summary>
-    /// Allows the state machine to update this object's vertical position
-    /// </summary>
-    /// <param name="value">The time parameter to pass</param>
-    public void HandleJumpUpdate(float jumpTimer)
-    {
-        transform.position = new Vector3(transform.position.x, ParabolicPosition(jumpTimer), transform.position.z);
-    }
-
-    /// <summary>
-    /// Allows the state machine to update this object's vertical position with regards to down jumping
-    /// </summary>
-    /// <param name="newYValue">The new Y value for this object</param>
-    public void HandleDownJumpUpdate(float newYValue)
-    {
-        float adjustedValue = transform.position.y - newYValue;
-        transform.position = new Vector3(transform.position.x, adjustedValue, transform.position.z);
-    }
-
-    /// <summary>
-    /// Resets this object's height to the original value
-    /// </summary>
-    public void ResetHeight()
-    {
-        transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
-    }
-
-    /// <summary>
-    /// Provide access to the duration in seconds of the attack animation
-    /// </summary>
-    /// <returns></returns>
-    public float GetAttackDuration()
-    {
-        return CharacterData.characterParameters.attackDuration;
-    }
-
-    public float GetParryWindow()
-    {
-        return CharacterData.characterParameters.parryWindow;
-    }
-
-    // Parry Information
-    public ParryEffect GetParryType()
-    {
-        return CharacterData.characterParameters.shieldParams.effect;
-    }
-    public Sprite GetParryPrite()
-    {
-        return CharacterData.characterParameters.shieldParams.parrySprite;
-    }
-
-    public Sprite GetHardenedBullet()
-    {
-        return CharacterData.characterParameters.shieldParams.hardenedBullet;
-    }
-
-    
-    
-    // Utility methods //
-    float ParabolicPosition(float value)
-    {
-        float t = value / CharacterData.characterParameters.jumpDuration;
-        return CharacterData.characterParameters.jumpHeight * ( -4 * t * t + 4 * t) + originalYPosition;
-    }
-
-    public void SetHealthBarController(HealthBarController controller)
-    {
-        healthBarController = controller;
-    }
-
-    public void SetInputBufferDebugger(DebugInputBuffer debugger)
-    {
-        inputBufferDebug = debugger;
-    }
+    } 
 
     // Updates all cooldowns and informs the UI of any relevant changes
     private void UpdateTimersAndUI()
@@ -300,52 +392,6 @@ public class Character : MonoBehaviour
         healthBarController.UpdateCooldown(CooldownType.Block, TWO_PI * (blockCooldownTimer / CharacterData.characterParameters.blockCooldown));
     }
 
-    // Gameplay functions //
-
-    // Change the player's life total based on the damage they've taken.
-    // Show feedback to the player that damage has been done
-    public void TakeDamage(float value)
-    {
-        if (!bCanBeDamaged)
-        {
-            return;
-        }
-        currentHealth -= value;
-        healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
-        if (currentHealth <= 0)
-        {
-            // End Game
-            bCanBeDamaged = false;
-            ServiceLocator.Instance.GetService<BattleManager>().SetGameToOver();
-        }
-    }
-
-    public void ThrowFireball()
-    {
-        Bullet b = bulletPool.GetBullet().GetComponent<Bullet>();
-        b.transform.position = transform.position + forward3 + (forward3 * 0.1f);
-        b.Launch(CharacterData.characterParameters.bulletParams, forward3);
-        attackCooldown = CharacterData.characterParameters.shotCooldown;
-        attackCooldownSpeed = 1.0f;
-    }
-
-    // Handle Blocking //
-    public void EnableBlock()
-    {
-        BlockingField.gameObject.SetActive(true);
-    }
-
-    public void SetBlockToParry(bool value)
-    {
-        BlockingField.IsParry = value;
-    }
-
-    public void DisableBlock()
-    {
-        BlockingField.gameObject.SetActive(false);
-    }
-
-
     // Handle Player Input // 
     private void OnAttack(InputValue input)
     {
@@ -353,6 +399,7 @@ public class Character : MonoBehaviour
         InputMessage im = new InputMessage(EInput.Fireball);
         bufferItem.AddInput(im);
     }
+
     private void OnBlock(InputValue input)
     {
         if (input.isPressed)
@@ -403,14 +450,6 @@ public class Character : MonoBehaviour
             pi.SwitchCurrentActionMap("UI");
         }
     }
-    
-    public void SetInputToGame()
-    {
-        PlayerInput pi = GetComponent<PlayerInput>();
-        if (pi != null)
-        {
-            pi.SwitchCurrentActionMap("Player");
-        }
-        
-    }
+
+    #endregion
 }
