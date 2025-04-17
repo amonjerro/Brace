@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using InputManagement;
 using GameMenus;
 using System;
+using UnityEditor.Networking.PlayerConnection;
 
 public class Character : MonoBehaviour
 {
@@ -49,9 +50,11 @@ public class Character : MonoBehaviour
     BulletPool bulletPool;
     bool bInputsEnabled = true;
     bool bCanBeDamaged = true;
+    int _playerIndex;
 
     public bool IsGrounded {  get { return transform.position.y <= originalYPosition; } }
     public bool ChargesAvailable {  get { return charges > 0; } }
+    public int PlayerIndex { get { return _playerIndex; } }
 
     // Timers for game actions
     float blockTimer = 0;
@@ -202,6 +205,11 @@ public class Character : MonoBehaviour
     {
         transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
     }
+
+    public void SetIndex(int index)
+    {
+        _playerIndex = index;
+    }
     #endregion
 
     #region DATA_ACCESSORS
@@ -260,7 +268,7 @@ public class Character : MonoBehaviour
         {
             // End Game
             bCanBeDamaged = false;
-            ServiceLocator.Instance.GetService<BattleManager>().SetGameToOver();
+            ServiceLocator.Instance.GetService<BattleManager>().EndRound(PlayerIndex);
         }
     }
 

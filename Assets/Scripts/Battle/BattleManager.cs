@@ -16,6 +16,7 @@ public class BattleManager : AbsGameService
     public static Action gameOver;
     List<Character> activeCharacters;
     FightCamera cameraReference;
+    Dictionary<int, int> playerRoundsWon;
 
     public float HitstopTime { get { return _hitStopTime; } }
 
@@ -24,6 +25,7 @@ public class BattleManager : AbsGameService
     private void Awake()
     {
         activeCharacters = new List<Character>();
+        playerRoundsWon = new Dictionary<int, int>();
         cameraReference = Camera.main.gameObject.GetComponent<FightCamera>();
     }
 
@@ -63,7 +65,7 @@ public class BattleManager : AbsGameService
     public void RegisterCharacter(Character character)
     {
         activeCharacters.Add(character);
-        
+        playerRoundsWon.Add(character.PlayerIndex, 0);
     }
 
     /// <summary>
@@ -89,9 +91,20 @@ public class BattleManager : AbsGameService
     /// Set the game to over - might change accessibilty and functionality of this since this was created
     /// before this class was made a service
     /// </summary>
-    public void SetGameToOver()
+    public void EndRound(int loser)
     {
-        gameOver?.Invoke();
+        int winner = loser == 0 ? 1 : 0;
+        playerRoundsWon[winner]++;
+        foreach (KeyValuePair<int, int> kvp in playerRoundsWon) { 
+            if (kvp.Value == GameInstance.RoundsToWin)
+            {
+                gameOver?.Invoke();
+                return;
+            }
+        }
+        
+        // Restart the round
+
     }
 
 
@@ -116,9 +129,12 @@ public class BattleManager : AbsGameService
         }
     }
 
+    /// <summary>
+    /// Function that reacts to the event that players have taken damage
+    /// </summary>
+    /// <param name="wasBlocking">Was the player who took damage blocking</param>
     public void ReactToDamageTaken(bool wasBlocking)
     {
-        Debug.Log("Damage Taken!");
         cameraReference.InitiateShake(wasBlocking);
         StartCoroutine(RunHitstop());
     }

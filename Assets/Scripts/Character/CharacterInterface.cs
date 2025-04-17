@@ -89,6 +89,7 @@ public class CharacterInterface : MonoBehaviour
         // Configure the state for characters
         createdCharacter.SetHealthBarController(playerHealthBar);
         createdCharacter.SetInputBufferDebugger(inputDebugger);
+        createdCharacter.SetIndex(PlayerIndex);
         bm.RegisterCharacter(createdCharacter);
     }
 }

@@ -1,7 +1,7 @@
 public static class GameInstance
 {
     public static LevelData selectedLevel;
-
+    public static int RoundsToWin = 2;
     public static int Player1Character = 0;
     public static int Player2Character = 0;
     public static void Initialize()

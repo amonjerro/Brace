@@ -265,7 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da76ccc0483dfe744aaad54baddd55eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerIndex: 0
+  PlayerIndex: 1
   SpawnLocation: {x: 5, y: -3, z: 0}
   controlType: 1
   aiType: 5
