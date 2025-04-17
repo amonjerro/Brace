@@ -10,17 +10,21 @@ public class BattleManager : AbsGameService
 {
     [SerializeField]
     [Tooltip("The duration of hit stop time freeze in seconds")]
-    float hitStopTime;
+    float _hitStopTime;
 
     StateMachine<GameStates> stateMachine;
     public static Action gameOver;
     List<Character> activeCharacters;
+    FightCamera cameraReference;
+
+    public float HitstopTime { get { return _hitStopTime; } }
 
 
     /** Unity Lifecycle stuff **/
     private void Awake()
     {
         activeCharacters = new List<Character>();
+        cameraReference = Camera.main.gameObject.GetComponent<FightCamera>();
     }
 
 
@@ -114,6 +118,8 @@ public class BattleManager : AbsGameService
 
     public void ReactToDamageTaken()
     {
+        Debug.Log("Damage Taken!");
+        cameraReference.InitiateShake();
         StartCoroutine(RunHitstop());
     }
 
@@ -121,7 +127,7 @@ public class BattleManager : AbsGameService
     IEnumerator RunHitstop()
     {
         TimeUtil.timeScale = 0.0f;
-        yield return new WaitForSeconds(hitStopTime);
+        yield return new WaitForSeconds(_hitStopTime);
         TimeUtil.timeScale = 1.0f;
     }
 }
