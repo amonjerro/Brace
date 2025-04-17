@@ -116,10 +116,10 @@ public class BattleManager : AbsGameService
         }
     }
 
-    public void ReactToDamageTaken()
+    public void ReactToDamageTaken(bool wasBlocking)
     {
         Debug.Log("Damage Taken!");
-        cameraReference.InitiateShake();
+        cameraReference.InitiateShake(wasBlocking);
         StartCoroutine(RunHitstop());
     }
 

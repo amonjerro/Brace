@@ -16,10 +16,12 @@ public class FightCamera : MonoBehaviour
 
     Vector3 originalPosition;
     float cameraShakeDuration;
+    float slowSpeed;
     float shakeTimer;
     float noiseTimer;
     float ySample;
     float xSample;
+    bool bUseSlow;
     bool bShake;
 
     private void Awake()
@@ -30,6 +32,7 @@ public class FightCamera : MonoBehaviour
         ySample = Random.Range(0, 10);
         xSample = Random.Range(0, 10);
         originalPosition = transform.position;
+        slowSpeed = cameraShakeSpeed * 0.25f;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -44,12 +47,12 @@ public class FightCamera : MonoBehaviour
         HandleShake();
     }
 
-    public void InitiateShake()
+    public void InitiateShake(bool wasBlocking)
     {
         shakeTimer = 0.0f;
         noiseTimer = 0.0f;
         bShake = true;
-
+        bUseSlow = wasBlocking;
     }
 
     private void HandleShake()
@@ -70,9 +73,9 @@ public class FightCamera : MonoBehaviour
             bShake = false;
             return;
         }
-
-        float xChange = XSensitivity * (2 * (Mathf.PerlinNoise1D(xSample + noiseTimer * cameraShakeSpeed) - 1.0f));
-        float yChange = YSensitivity * (2 * (Mathf.PerlinNoise1D(ySample + noiseTimer * cameraShakeSpeed) - 1.0f));
+        float speed = bUseSlow ? slowSpeed : cameraShakeSpeed;
+        float xChange = XSensitivity * (2 * (Mathf.PerlinNoise1D(xSample + noiseTimer * speed) - 1.0f));
+        float yChange = YSensitivity * (2 * (Mathf.PerlinNoise1D(ySample + noiseTimer * speed) - 1.0f));
 
         transform.position = new Vector3(xChange + originalPosition.x, yChange + originalPosition.y, originalPosition.z);
     }

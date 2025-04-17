@@ -33,7 +33,7 @@ public class Character : MonoBehaviour
     [Tooltip("Read-only for state machine debugging purposes")]
     CharacterStates currentState;
 
-    public static Action DamageTaken;
+    public static Action<bool> DamageTaken;
 
     // Internals
     HealthBarController healthBarController;
@@ -255,7 +255,7 @@ public class Character : MonoBehaviour
         }
         currentHealth -= value;
         healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
-        DamageTaken?.Invoke();
+        DamageTaken?.Invoke(BlockingField.gameObject.activeInHierarchy);
         if (currentHealth <= 0)
         {
             // End Game
