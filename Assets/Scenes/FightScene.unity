@@ -2169,6 +2169,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hitStopTime: 0.2
+  leftPlayerRoundsHolder: {fileID: 920093200}
+  rightPlayerRoundsHolder: {fileID: 566157574}
 --- !u!1001 &1116331372
 PrefabInstance:
   m_ObjectHideFlags: 0
