@@ -1,10 +1,27 @@
 using System;
 
+public enum ConditionType
+{
+    Not,
+    And,
+    Or,
+    Range,
+    Greater,
+    Equals
+}
+
 // Conditions for the state machine transitions
 public abstract class Condition
 {
+    protected static ConditionType conditionType;
     public abstract void Reset();
     public abstract bool Test();
+
+    public override string ToString()
+    {
+        return conditionType.ToString();
+    }
+
 }
 
 
@@ -37,6 +54,7 @@ public abstract class AbsValueCondition<T> : Condition where T : IComparable
     {
         ConditionValue = default(T);
     }
+
 }
 
 // Evaluation Conditions
@@ -53,6 +71,7 @@ public class WithinRangeCondition<T> : AbsValueCondition<T> where T : IComparabl
     public WithinRangeCondition(T minValue, T maxValue){
         MinValue = minValue;
         MaxValue = maxValue;
+        conditionType = ConditionType.Range;
     }
 
     public override bool Test()
@@ -74,6 +93,7 @@ public class GreaterThanCondition<T> : AbsValueCondition<T> where T : IComparabl
     public GreaterThanCondition(T threshold)
     {
         Threshold = threshold;
+        conditionType = ConditionType.Greater;
     }
 
     public override bool Test()
@@ -94,6 +114,7 @@ public class EqualsCondition<T> : AbsValueCondition<T> where T : IComparable
     public EqualsCondition(T expectedValue)
     {
         ExpectedValue = expectedValue;
+        conditionType = ConditionType.Equals;
     }
 
     public override bool Test()
@@ -136,6 +157,7 @@ public class AndCondition : AbsCompoundCondition
     {
         ConditionA = conditionA;
         ConditionB = conditionB;
+        conditionType = ConditionType.And;
     }
 
 

@@ -20,4 +20,10 @@ public class Transition<EState> where EState : System.Enum
     {
         condition.Reset();
     }
+
+    public override string ToString()
+    {
+
+        return condition.ToString();
+    }
 }

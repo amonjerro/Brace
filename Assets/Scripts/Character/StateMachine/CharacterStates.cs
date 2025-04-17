@@ -247,7 +247,7 @@ public class ParryingState : PlayerState
 
     protected override void OnExit()
     {
-        if (!parryTimeCondition.Test())
+        if (releaseCondition.Test())
         {
             // Block has been released. Return to neutral state
             transitions[CharacterStates.Neutral].TargetState = machine.UnstackState();

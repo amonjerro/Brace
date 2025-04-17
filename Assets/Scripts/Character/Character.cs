@@ -37,6 +37,7 @@ public class Character : MonoBehaviour
     public static Action<bool> DamageTaken;
 
     // Internals
+    [SerializeField]
     HealthBarController healthBarController;
     InputBuffer inputBuffer;
     InputBufferItem bufferItem;

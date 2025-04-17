@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 public enum CooldownType
 {
     Block,
@@ -14,19 +15,19 @@ public class HealthBarController : MonoBehaviour
 {
     [SerializeField]
     [Tooltip("The sprite renderer for the life bar")]
-    SpriteRenderer healthBarRenderer;
+    Image healthBarRenderer;
 
     [SerializeField]
     [Tooltip("The sprite renderer for the jump action button")]
-    SpriteRenderer jumpActionSpriteRenderer;
+    Image jumpActionSpriteRenderer;
     
     [SerializeField]
     [Tooltip("The sprite renderer for the attack action button")]
-    SpriteRenderer shootActionSpriteRenderer;
+    Image shootActionSpriteRenderer;
     
     [SerializeField]
     [Tooltip("The sprite renderer for the block action button")]
-    SpriteRenderer blockActionSpriteRenderer;
+    Image blockActionSpriteRenderer;
 
     [SerializeField]
     [Range(0f, 0.5f)]

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
-
+using TMPro.EditorUtilities;
+using UnityEngine;
 /// <summary>
 /// Generic state machine for the various game elements that will require one
 /// </summary>
@@ -26,6 +28,7 @@ public class StateMachine<EState> where EState : System.Enum
                 _currentState.Exit();
                 _currentState = kvp.Value.TargetState;
                 _currentState.Enter();
+                
                 break;
             }
         }
