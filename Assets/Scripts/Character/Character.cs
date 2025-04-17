@@ -112,6 +112,11 @@ public class Character : MonoBehaviour
         currentHealth = MAX_HEALTH;
         healthBarController.UpdateHealth(currentHealth / MAX_HEALTH);
         stateMachine.RestoreInitialState();
+        attackCooldown = 0.0f;
+        blockTimer = 0.0f;
+        blockCooldownTimer = 0.0f;
+        SetBlockToParry(false);
+        DisableBlock();
         bCanBeDamaged = true;
     }
     #endregion
@@ -300,6 +305,11 @@ public class Character : MonoBehaviour
     public void DisableBlock()
     {
         BlockingField.gameObject.SetActive(false);
+    }
+
+    public void SetVulnerability(bool vulnerability)
+    {
+        bCanBeDamaged = vulnerability;
     }
     #endregion
 

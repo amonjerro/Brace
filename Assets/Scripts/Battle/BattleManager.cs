@@ -12,11 +12,20 @@ public class BattleManager : AbsGameService
     [Tooltip("The duration of hit stop time freeze in seconds")]
     float _hitStopTime;
 
+    [SerializeField]
+    [Tooltip("Canvas object corresponding to the rounds holder for the left player")]
+    RoundsHolder leftPlayerRoundsHolder;
+    
+    [SerializeField]
+    [Tooltip("Canvas object corresponding to the rounds holder for the right player")]
+    RoundsHolder rightPlayerRoundsHolder;
+
     StateMachine<GameStates> stateMachine;
     public static Action gameOver;
     List<Character> activeCharacters;
     FightCamera cameraReference;
     Dictionary<int, int> playerRoundsWon;
+    
 
     public float HitstopTime { get { return _hitStopTime; } }
 
@@ -34,6 +43,10 @@ public class BattleManager : AbsGameService
     {
         Character.DamageTaken += ReactToDamageTaken;
         TimeUtil.Initialize();
+        // Set up the rounds information
+        leftPlayerRoundsHolder.Initialize(GameInstance.RoundsToWin);
+        rightPlayerRoundsHolder.Initialize(GameInstance.RoundsToWin);
+        // Set up the state machine
         SetupStateMachine();
     }
 
@@ -77,7 +90,7 @@ public class BattleManager : AbsGameService
         stateMachine = new StateMachine<GameStates>();
 
         // Create the states
-        CountdownState countdownState = new CountdownState();
+        CountdownState countdownState = new CountdownState(this);
         ActiveGameplayState activeGameplayState = new ActiveGameplayState();
         GameOverState gameOverState = new GameOverState();
         countdownState.transitions[GameStates.Active].TargetState = activeGameplayState;
@@ -94,7 +107,15 @@ public class BattleManager : AbsGameService
     public void EndRound(int loser)
     {
         int winner = loser == 0 ? 1 : 0;
+        if (winner == 0)
+        {
+            leftPlayerRoundsHolder.AddVictory();
+        } else
+        {
+            rightPlayerRoundsHolder.AddVictory();
+        }
         playerRoundsWon[winner]++;
+        
         foreach (KeyValuePair<int, int> kvp in playerRoundsWon) { 
             if (kvp.Value == GameInstance.RoundsToWin)
             {
@@ -104,9 +125,11 @@ public class BattleManager : AbsGameService
         }
         
         // Restart the round
+        TimeUtil.timeScale = 0;
+        SetCharacterVulnerabilities(false);
+        Reset();
 
     }
-
 
     /// <summary>
     /// Perform service clean up
@@ -129,6 +152,14 @@ public class BattleManager : AbsGameService
         }
     }
 
+    public void SetCharacterVulnerabilities(bool val)
+    {
+        foreach (Character c in activeCharacters)
+        {
+            c.SetVulnerability(val);
+        }
+    }
+
     /// <summary>
     /// Function that reacts to the event that players have taken damage
     /// </summary>
@@ -146,4 +177,5 @@ public class BattleManager : AbsGameService
         yield return new WaitForSeconds(_hitStopTime);
         TimeUtil.timeScale = 1.0f;
     }
+
 }

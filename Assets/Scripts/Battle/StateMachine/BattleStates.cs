@@ -5,26 +5,29 @@ using GameMenus;
 // This class triggers the countdown at the start of the fight
 public class CountdownState : AbsState<GameStates>
 {
-    
+    BattleManager managerReference;
     float countdownTimer;
     WithinRangeCondition<float> countdownCondition;
-    public CountdownState()
+    public CountdownState(BattleManager managerReference)
     {
-        transitions = new Dictionary<GameStates,Transition<GameStates>>();
+        transitions = new Dictionary<GameStates, Transition<GameStates>>();
         Transition<GameStates> toStart = new Transition<GameStates>();
         countdownCondition = new WithinRangeCondition<float>(2.99f, 3.01f);
         toStart.SetCondition(countdownCondition);
-        transitions.Add(GameStates.Active,toStart);
+        transitions.Add(GameStates.Active, toStart);
         stateValue = GameStates.Countdown;
+        this.managerReference = managerReference;
     }
 
     protected override void OnEnter()
     {
         // Trigger countdown UI
         Time.timeScale = 1f;
+        TimeUtil.timeScale = 0.0f;
 
         // Disable inputs
-        ServiceLocator.Instance.GetService<BattleManager>().SetCharacterInputStatus(false);
+        managerReference.SetCharacterInputStatus(false);
+        managerReference.SetCharacterVulnerabilities(false);
     }
 
     protected override void OnExit()
@@ -32,10 +35,13 @@ public class CountdownState : AbsState<GameStates>
         // Reset state
         countdownTimer = 0.0f;
         countdownCondition.Reset();
+        TimeUtil.timeScale = 1.0f;
 
         // Remove countdown UI
 
         // Enable inputs
+        managerReference.SetCharacterInputStatus(true);
+        managerReference.SetCharacterVulnerabilities(true);
     }
 
     protected override void OnUpdate()
@@ -61,7 +67,6 @@ public class ActiveGameplayState : AbsState<GameStates>
     }
     protected override void OnEnter() {
         BattleManager.gameOver += ListenToGameOver;
-        ServiceLocator.Instance.GetService<BattleManager>().SetCharacterInputStatus(true);
     }
     protected override void OnExit()
     {
