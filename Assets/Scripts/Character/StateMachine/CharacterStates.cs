@@ -328,9 +328,12 @@ public class JumpingState : PlayerState
             return;
         }
 
-
         Flush();
         // Create landing particle system on grounded
+        if (characterReference.IsGrounded)
+        {
+            characterReference.TriggerLandingAnimation();
+        }
     }
 
     protected override void OnUpdate()
@@ -416,9 +419,7 @@ public class JumpAttackState : PlayerState
     protected override void OnExit()
     {
         Flush();
-        if (characterReference.IsGrounded) {
-            characterReference.TriggerLandingAnimation();
-        }
+        
     }
 
     protected override void OnUpdate()
