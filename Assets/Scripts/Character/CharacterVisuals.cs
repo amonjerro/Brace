@@ -58,7 +58,6 @@ public class CharacterVisuals : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log("Done?");
         currentLandingSprite = 0;
         leftPuff.sprite = landingSprites[currentLandingSprite];
         rightPuff.sprite= landingSprites[currentLandingSprite];
