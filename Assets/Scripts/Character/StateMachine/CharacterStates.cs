@@ -375,6 +375,7 @@ public class DownJumpingState : PlayerState
     protected override void OnExit()
     {
         // Create a particle system to show landing
+        characterReference.TriggerLandingAnimation();
     }
 
     protected override void OnUpdate()
@@ -415,6 +416,9 @@ public class JumpAttackState : PlayerState
     protected override void OnExit()
     {
         Flush();
+        if (characterReference.IsGrounded) {
+            characterReference.TriggerLandingAnimation();
+        }
     }
 
     protected override void OnUpdate()

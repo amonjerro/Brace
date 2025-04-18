@@ -3,7 +3,6 @@ using UnityEngine.InputSystem;
 using InputManagement;
 using GameMenus;
 using System;
-using UnityEditor.Networking.PlayerConnection;
 
 public class Character : MonoBehaviour
 {
@@ -44,6 +43,7 @@ public class Character : MonoBehaviour
     StateMachine<CharacterStates> stateMachine;
     DebugInputBuffer inputBufferDebug;
     CharacterSO CharacterData;
+    CharacterVisuals characterVisuals;
 
     // Base values
     Vector3 forward3;
@@ -311,6 +311,11 @@ public class Character : MonoBehaviour
     {
         bCanBeDamaged = vulnerability;
     }
+
+    public void TriggerLandingAnimation()
+    {
+        characterVisuals.PlayLanding();
+    }
     #endregion
 
 
@@ -330,6 +335,7 @@ public class Character : MonoBehaviour
         {
             forward3 *= -1;
         }
+        characterVisuals = GetComponent<CharacterVisuals>();
         originalYPosition = transform.position.y;
         ConfigureInputBuffer();
         SetupStateMachine();
