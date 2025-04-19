@@ -18,7 +18,8 @@ public class Bullet : MonoBehaviour
 
     // Configuration parameters
     SpriteRenderer spriteRenderer;
-    SpriteRenderer hardenedRenderer;
+    Sprite regularBullet;
+    Sprite hardenedBullet;
     float bulletDamage;
     int bulletToughness;
     
@@ -41,6 +42,7 @@ public class Bullet : MonoBehaviour
     public void Harden()
     {
         bulletToughness++;
+        spriteRenderer.sprite = hardenedBullet;
     }
 
     // Update is called once per frame
@@ -77,7 +79,9 @@ public class Bullet : MonoBehaviour
         bulletToughness = 1;
 
         if (bulletParams.bulletSprite != null) {
-            spriteRenderer.sprite = bulletParams.bulletSprite;
+            regularBullet = bulletParams.bulletSprite;
+            hardenedBullet = bulletParams.hardenedBullet;
+            spriteRenderer.sprite = regularBullet;
             spriteRenderer.color = Color.white;
         }
         CheckForSpriteFlip();
@@ -131,6 +135,10 @@ public class Bullet : MonoBehaviour
         else
         {
             bulletToughness--;
+            if (bulletToughness == 1)
+            {
+                spriteRenderer.sprite = regularBullet;
+            }
         }
 
 
