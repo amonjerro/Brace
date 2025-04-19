@@ -20,6 +20,9 @@ public class BattleManager : AbsGameService
     [Tooltip("Canvas object corresponding to the rounds holder for the right player")]
     RoundsHolder rightPlayerRoundsHolder;
 
+    [SerializeField]
+    Transform highMidpoint;
+
     StateMachine<GameStates> stateMachine;
     public static Action gameOver;
     List<Character> activeCharacters;
@@ -168,6 +171,11 @@ public class BattleManager : AbsGameService
     {
         cameraReference.InitiateShake(wasBlocking);
         StartCoroutine(RunHitstop());
+    }
+
+    public Vector3 GetMidpointLocation()
+    {
+        return highMidpoint.position;
     }
 
     // Stops the game for the duration of hit stop to add that juicy feel

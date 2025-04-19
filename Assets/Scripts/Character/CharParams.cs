@@ -31,6 +31,7 @@ public struct BulletParams
     public Sprite bulletSprite;
     public float bulletDamage;
     public Sprite hardenedBullet;
+    public LaunchStrategies launchType;
 }
 
 // Parameters to govern the shield behavior for each character

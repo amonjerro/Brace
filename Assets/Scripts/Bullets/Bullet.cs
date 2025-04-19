@@ -1,3 +1,4 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -5,6 +6,8 @@ public class Bullet : MonoBehaviour
     // Designer-set properties
     [SerializeField]
     float maxX = 12;
+
+    public float MaxX { get { return maxX; } }
 
     [SerializeField]
     float maxY = 12;
@@ -25,6 +28,7 @@ public class Bullet : MonoBehaviour
     
     // Lifecycle state
     bool bBulletInPlay;
+    AbsLaunchStrategy absLaunchStrategy;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -54,6 +58,8 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        absLaunchStrategy.Update();
+
         
         // Update the position based on the movement direction
         transform.position += MovementComponent.direction * MovementComponent.speed * TimeUtil.GetDelta();
@@ -73,20 +79,39 @@ public class Bullet : MonoBehaviour
     // Ask the pool for a new bullet and get it ready to be gameplay-relevant
     public void Launch(BulletParams bulletParams, Vector3 fireDirection)
     {
-        MovementComponent.direction = fireDirection;
-        MovementComponent.speed = bulletParams.moveSpeed;
+        SetBulletGraphics(bulletParams);
+        
         bulletDamage = bulletParams.bulletDamage;
         bulletToughness = 1;
 
-        if (bulletParams.bulletSprite != null) {
-            regularBullet = bulletParams.bulletSprite;
-            hardenedBullet = bulletParams.hardenedBullet;
-            spriteRenderer.sprite = regularBullet;
-            spriteRenderer.color = Color.white;
+        if (absLaunchStrategy == null)
+        {
+            absLaunchStrategy = LaunchFactory.MakeLaunchFactory(bulletParams.launchType, this);
+        } else if (absLaunchStrategy.LaunchStrategies != bulletParams.launchType)
+        {
+            absLaunchStrategy = LaunchFactory.MakeLaunchFactory(bulletParams.launchType, this);
         }
+        
+        absLaunchStrategy.Launch(fireDirection, bulletParams);
         CheckForSpriteFlip();
         bBulletInPlay = true;
     }
+
+    public void SetSpeed(float moveSpeed)
+    {
+        MovementComponent.speed = moveSpeed;
+    }
+
+    public void SetDestinationTarget(Vector3 target)
+    {
+        MovementComponent.direction = (target - transform.position).normalized;
+    }
+
+    public void SetDirection(Vector3 direction)
+    {
+        MovementComponent.direction = direction;
+    }
+    
 
     /// <summary>
     /// Check whether for this bullet needs to be flipped.
@@ -140,7 +165,18 @@ public class Bullet : MonoBehaviour
                 spriteRenderer.sprite = regularBullet;
             }
         }
-
-
     }
+
+    private void SetBulletGraphics(BulletParams bulletParams)
+    {
+        if (bulletParams.bulletSprite != null)
+        {
+            regularBullet = bulletParams.bulletSprite;
+            hardenedBullet = bulletParams.hardenedBullet;
+            spriteRenderer.sprite = regularBullet;
+            spriteRenderer.color = Color.white;
+        }
+    }
+
+    
 }

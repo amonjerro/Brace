@@ -125,7 +125,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: Fireball1-Harden
     originalName: 
-    pivot: {x: 0.5, y: -0.033333335}
+    pivot: {x: 0.5, y: -0.032258064}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -134,7 +134,7 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 32
-      height: 30
+      height: 31
     spriteID: 18ed67339421b5a4a8c9dd17de58a2c9
     spriteBone: []
     spriteOutline: []
@@ -160,7 +160,7 @@ ScriptedImporter:
         x: 0
         y: 1
         width: 32
-        height: 30
+        height: 31
       spriteId: 18ed67339421b5a4a8c9dd17de58a2c9
     linkedCells: []
     parentIndex: -1
