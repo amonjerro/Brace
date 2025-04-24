@@ -2467,6 +2467,7 @@ MonoBehaviour:
   leftCharacterPanel: {fileID: 1609365050}
   rightCharacterPanel: {fileID: 2038790820}
   roster: {fileID: 11400000, guid: 72a811cf235c2104abfddb4bb84cd552, type: 2}
+  LevelData: {fileID: 0}
 --- !u!95 &1203871796
 Animator:
   serializedVersion: 7

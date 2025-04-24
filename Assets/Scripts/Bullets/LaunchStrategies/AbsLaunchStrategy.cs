@@ -66,6 +66,7 @@ public class DelayedLaunch : AbsLaunchStrategy
 
     public override void Launch(Vector3 direction, BulletParams parameters)
     {
+        parentBullet.SetSpeed(0.0f);
         expectedSpeed = parameters.moveSpeed;
         parentBullet.SetDirection(direction);
         timer = 0.0f;
@@ -77,7 +78,9 @@ public class DelayedLaunch : AbsLaunchStrategy
         if (bTriggered) {
             return;
         }
-        timer += Time.deltaTime;
+
+
+        timer += TimeUtil.GetDelta();
         if (timer > triggerTime) { 
             bTriggered = true;
             parentBullet.SetSpeed(expectedSpeed);
