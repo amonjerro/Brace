@@ -2464,10 +2464,13 @@ MonoBehaviour:
   - {r: 0.1432894, g: 0.5453531, b: 0.8679245, a: 1}
   - {r: 0.8867924, g: 0.13803846, b: 0.6381631, a: 1}
   characterPortraitContainer: {fileID: 908466678}
+  leftCharacterDesign: {fileID: 603134933}
   leftCharacterPanel: {fileID: 1609365050}
+  rightCharacter: {fileID: 611911533}
   rightCharacterPanel: {fileID: 2038790820}
   roster: {fileID: 11400000, guid: 72a811cf235c2104abfddb4bb84cd552, type: 2}
   LevelData: {fileID: 0}
+  animationSpeed: 1
 --- !u!95 &1203871796
 Animator:
   serializedVersion: 7
