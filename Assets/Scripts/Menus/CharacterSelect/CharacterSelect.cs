@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using InputManagement;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,8 +21,16 @@ namespace GameMenus
         GameObject characterPortraitContainer;
 
         [SerializeField]
+        [Tooltip("Game Object containing the image of the left character")]
+        GameObject leftCharacterDesign;
+
+        [SerializeField]
         [Tooltip("Displays all information for the left player's currently selected character")]
         CharacterPanel leftCharacterPanel;
+
+        [SerializeField]
+        [Tooltip("Game Object containing the image of the right character")]
+        GameObject rightCharacter;
 
         [SerializeField]
         [Tooltip("Displays all information for the right player's currently selected character")]
@@ -34,11 +43,19 @@ namespace GameMenus
         [SerializeField]
         LevelDataSOs LevelData;
 
+        [SerializeField]
+        [Tooltip("Portait animation speed")]
+        float animationSpeed = 1.0f;
+
         // Internals
         Dictionary<(int, int), RectTransform> characterPortraits;
         Dictionary<int, int> playerChoices;
         List<CharacterCursor> cursors;
         Dictionary<int, bool> playerReadyStatus;
+
+        RectTransform leftCharTransform;
+        Vector3 leftCharacterOriginalPosition;
+        IEnumerator leftPortraitChangeAnimation;
 
         #region STATIC_FUNCTIONS
         /// <summary>
@@ -81,7 +98,7 @@ namespace GameMenus
 
         public void Awake()
         {
-            GameInstance.selectedLevel = LevelData.Find(Levels.MainMenu);
+            //GameInstance.selectedLevel = LevelData.Find(Levels.MainMenu);
         }
 
         private void Start()
@@ -90,6 +107,10 @@ namespace GameMenus
             playerChoices = new Dictionary<int, int>();
             cursors = new List<CharacterCursor>();
             playerReadyStatus = new Dictionary<int, bool>();
+            leftCharTransform = leftCharacterDesign.GetComponent<RectTransform>();
+            Quaternion q_i = Quaternion.identity;
+            leftCharTransform.GetPositionAndRotation(out leftCharacterOriginalPosition, out q_i);
+            Debug.Log(leftCharacterOriginalPosition);
             Initialize();
         }
 
@@ -181,7 +202,7 @@ namespace GameMenus
             int x = (location.Item1 + 1);
             return x + y;
         }
-
+        
         /// <summary>
         /// Update the information being shown on the character profiles
         /// </summary>
@@ -191,10 +212,54 @@ namespace GameMenus
         {
             if (side == 0)
             {
+                AnimateCharacterSpriteSwap(true);
                 leftCharacterPanel.UpdateCharacterPanel(roster.roster[index % roster.roster.Count]);
             }
             else if (side == 1) { 
                 rightCharacterPanel.UpdateCharacterPanel(roster.roster[index % roster.roster.Count]);
+            }
+        }
+
+
+        private void AnimateCharacterSpriteSwap(bool left)
+        {
+            if (left)
+            {
+                Vector3 v = Vector2.zero;
+                Quaternion q = Quaternion.identity;
+                leftCharTransform.GetPositionAndRotation(out v, out q);
+                leftPortraitChangeAnimation = PortaitSwitchAnimation(v, leftCharacterOriginalPosition.x, -335.0f);
+                StartCoroutine(leftPortraitChangeAnimation);
+            }
+        }
+
+        private IEnumerator PortaitSwitchAnimation(Vector3 currentPosition, float finalX, float screenOutX)
+        {
+            float finalDistance = Mathf.Abs(finalX - screenOutX);
+            float toOutDistance = Mathf.Abs(currentPosition.x - screenOutX);
+            float tolerance = 0.1f;
+            float distanceTraveled = 0.0f;
+            float sign = Mathf.Sign(screenOutX);
+            
+            while (distanceTraveled < toOutDistance) {
+                distanceTraveled += animationSpeed;
+                Vector3 newPosition = new Vector3(currentPosition.x + (distanceTraveled * sign), currentPosition.y, currentPosition.z);
+                leftCharTransform.SetPositionAndRotation(newPosition, Quaternion.identity);
+                yield return null;
+            }
+
+            
+            //Sprite swap
+
+            sign = sign * -1;
+            distanceTraveled = 0.0f;
+
+            while(distanceTraveled < finalDistance)
+            {
+                distanceTraveled += animationSpeed;
+                Vector3 newPosition = new Vector3(currentPosition.x + (distanceTraveled * sign), currentPosition.y, currentPosition.z);
+                leftCharTransform.SetPositionAndRotation(newPosition, Quaternion.identity);
+                yield return null;
             }
         }
 
