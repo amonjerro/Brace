@@ -56,6 +56,8 @@ namespace GameMenus
         RectTransform leftCharTransform;
         Vector3 leftCharacterOriginalPosition;
         IEnumerator leftPortraitChangeAnimation;
+        bool leftCoroutine;
+        bool rightCoroutine;
 
         #region STATIC_FUNCTIONS
         /// <summary>
@@ -111,6 +113,8 @@ namespace GameMenus
             Quaternion q_i = Quaternion.identity;
             leftCharTransform.GetPositionAndRotation(out leftCharacterOriginalPosition, out q_i);
             Debug.Log(leftCharacterOriginalPosition);
+            leftCoroutine = false;
+            rightCoroutine = false;
             Initialize();
         }
 
@@ -225,6 +229,10 @@ namespace GameMenus
         {
             if (left)
             {
+                if (leftCoroutine)
+                {
+                    StopCoroutine(leftPortraitChangeAnimation);
+                }
                 Vector3 v = Vector2.zero;
                 Quaternion q = Quaternion.identity;
                 leftCharTransform.GetPositionAndRotation(out v, out q);
@@ -233,15 +241,24 @@ namespace GameMenus
             }
         }
 
+        /// <summary>
+        /// Animation for the character portrait moving
+        /// </summary>
+        /// <param name="currentPosition"></param>
+        /// <param name="finalX"></param>
+        /// <param name="screenOutX"></param>
+        /// <returns></returns>
         private IEnumerator PortaitSwitchAnimation(Vector3 currentPosition, float finalX, float screenOutX)
         {
+            leftCoroutine = true;
             float finalDistance = Mathf.Abs(finalX - screenOutX);
             float toOutDistance = Mathf.Abs(currentPosition.x - screenOutX);
             float tolerance = 0.1f;
             float distanceTraveled = 0.0f;
             float sign = Mathf.Sign(screenOutX);
-            
-            while (distanceTraveled < toOutDistance) {
+            Quaternion i = Quaternion.identity;
+
+            while ((toOutDistance - distanceTraveled) > tolerance) {
                 distanceTraveled += animationSpeed;
                 Vector3 newPosition = new Vector3(currentPosition.x + (distanceTraveled * sign), currentPosition.y, currentPosition.z);
                 leftCharTransform.SetPositionAndRotation(newPosition, Quaternion.identity);
@@ -253,14 +270,16 @@ namespace GameMenus
 
             sign = sign * -1;
             distanceTraveled = 0.0f;
+            leftCharTransform.GetPositionAndRotation(out currentPosition, out i);
 
-            while(distanceTraveled < finalDistance)
+            while((finalDistance - distanceTraveled) > tolerance)
             {
                 distanceTraveled += animationSpeed;
                 Vector3 newPosition = new Vector3(currentPosition.x + (distanceTraveled * sign), currentPosition.y, currentPosition.z);
                 leftCharTransform.SetPositionAndRotation(newPosition, Quaternion.identity);
                 yield return null;
             }
+            leftCoroutine = false;
         }
 
         /// <summary>
