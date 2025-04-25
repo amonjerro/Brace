@@ -236,7 +236,7 @@ namespace GameMenus
                 Vector3 v = Vector2.zero;
                 Quaternion q = Quaternion.identity;
                 leftCharTransform.GetPositionAndRotation(out v, out q);
-                leftPortraitChangeAnimation = PortaitSwitchAnimation(v, leftCharacterOriginalPosition.x, -335.0f);
+                leftPortraitChangeAnimation = PortaitSwitchAnimation(v, leftCharacterOriginalPosition.x, -335.0f, leftCharTransform);
                 StartCoroutine(leftPortraitChangeAnimation);
             }
         }
@@ -244,11 +244,12 @@ namespace GameMenus
         /// <summary>
         /// Animation for the character portrait moving
         /// </summary>
-        /// <param name="currentPosition"></param>
-        /// <param name="finalX"></param>
-        /// <param name="screenOutX"></param>
+        /// <param name="currentPosition">The current position of the sprite being swapped</param>
+        /// <param name="finalX">The final X position that this sprite needs to occupy</param>
+        /// <param name="screenOutX">The x location that sits outside the screen for this sprite</param>
+        /// <param name="trf">The actual sprite to move</param>
         /// <returns></returns>
-        private IEnumerator PortaitSwitchAnimation(Vector3 currentPosition, float finalX, float screenOutX)
+        private IEnumerator PortaitSwitchAnimation(Vector3 currentPosition, float finalX, float screenOutX, RectTransform trf)
         {
             leftCoroutine = true;
             float finalDistance = Mathf.Abs(finalX - screenOutX);
@@ -261,22 +262,21 @@ namespace GameMenus
             while ((toOutDistance - distanceTraveled) > tolerance) {
                 distanceTraveled += animationSpeed;
                 Vector3 newPosition = new Vector3(currentPosition.x + (distanceTraveled * sign), currentPosition.y, currentPosition.z);
-                leftCharTransform.SetPositionAndRotation(newPosition, Quaternion.identity);
+                trf.SetPositionAndRotation(newPosition, Quaternion.identity);
                 yield return null;
             }
 
             
             //Sprite swap
-
             sign = sign * -1;
             distanceTraveled = 0.0f;
-            leftCharTransform.GetPositionAndRotation(out currentPosition, out i);
+            trf.GetPositionAndRotation(out currentPosition, out i);
 
             while((finalDistance - distanceTraveled) > tolerance)
             {
                 distanceTraveled += animationSpeed;
                 Vector3 newPosition = new Vector3(currentPosition.x + (distanceTraveled * sign), currentPosition.y, currentPosition.z);
-                leftCharTransform.SetPositionAndRotation(newPosition, Quaternion.identity);
+                trf.SetPositionAndRotation(newPosition, Quaternion.identity);
                 yield return null;
             }
             leftCoroutine = false;
