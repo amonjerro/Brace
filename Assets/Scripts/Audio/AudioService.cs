@@ -6,6 +6,9 @@ public class AudioService : AbsGameService
     [SerializeField]
     AudioSource backgroundMusic;
 
+    [SerializeField]
+    AudioSource interruptSource;
+
     #region PROPERTIES
     // General volume control
     private float _masterVolume = 1.0f;
@@ -61,6 +64,15 @@ public class AudioService : AbsGameService
     public override void CleanUp()
     {
         // Nothing to do here yet
+    }
+
+
+    public void PlaySFX(AudioClip sound)
+    {
+        if (interruptSource.isPlaying) {
+            interruptSource.Stop();
+        }
+        interruptSource.PlayOneShot(sound, _sfxVolume);
     }
 
 }

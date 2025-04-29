@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,6 +28,7 @@ public enum Levels
     CharacterSelect
 }
 
+[Serializable]
 public struct LevelData {
     public string levelName;
     public Levels levelType;
