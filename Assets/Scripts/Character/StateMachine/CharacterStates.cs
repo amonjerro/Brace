@@ -190,6 +190,7 @@ public class BlockingState : PlayerState
             activeMessage.consumed = true;
         }
         characterReference.DisableBlock();
+        characterReference.SetCooldown(CooldownType.Block);
         transitions[CharacterStates.Neutral].TargetState = machine.UnstackState();
         Flush();
     }
@@ -253,6 +254,7 @@ public class ParryingState : PlayerState
             transitions[CharacterStates.Neutral].TargetState = machine.UnstackState();
             characterReference.SetBlockToParry(false);
             characterReference.DisableBlock();
+            characterReference.SetCooldown(CooldownType.Block);
         }
 
         if (activeMessage != null)
@@ -378,7 +380,7 @@ public class DownJumpingState : PlayerState
     protected override void OnExit()
     {
         // Trigger the jump cooldown
-        characterReference.StartJumpCooldown();
+        characterReference.SetCooldown(CooldownType.Jump);
         // Create a particle system to show landing
         characterReference.TriggerLandingAnimation();
     }

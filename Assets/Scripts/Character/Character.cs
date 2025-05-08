@@ -285,7 +285,7 @@ public class Character : MonoBehaviour
         Bullet b = bulletPool.GetBullet().GetComponent<Bullet>();
         b.transform.position = transform.position + forward3 + (forward3 * 0.1f);
         b.Launch(CharacterData.characterParameters.bulletParams, forward3);
-        attackCooldown = CharacterData.characterParameters.shotCooldown;
+        SetCooldown(CooldownType.Shoot);
     }
 
     // Handle Blocking //
@@ -315,9 +315,21 @@ public class Character : MonoBehaviour
         characterVisuals.PlayLanding();
     }
 
-    public void StartJumpCooldown()
+    public void SetCooldown(CooldownType cooldown)
     {
-        jumpCooldownTimer = CharacterData.characterParameters.jumpCooldown;
+        switch (cooldown)
+        {
+            case CooldownType.Block:
+                blockCooldownTimer = CharacterData.characterParameters.blockCooldown;
+                break;
+            case CooldownType.Shoot:
+                attackCooldown = CharacterData.characterParameters.shotCooldown;
+                break;
+            case CooldownType.Jump:
+                jumpCooldownTimer = CharacterData.characterParameters.jumpCooldown;
+                break;
+        }
+        
     }
     #endregion
 
