@@ -377,7 +377,8 @@ public class DownJumpingState : PlayerState
 
     protected override void OnExit()
     {
-
+        // Trigger the jump cooldown
+        characterReference.StartJumpCooldown();
         // Create a particle system to show landing
         characterReference.TriggerLandingAnimation();
     }

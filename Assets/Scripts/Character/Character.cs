@@ -314,6 +314,11 @@ public class Character : MonoBehaviour
     {
         characterVisuals.PlayLanding();
     }
+
+    public void StartJumpCooldown()
+    {
+        jumpCooldownTimer = CharacterData.characterParameters.jumpCooldown;
+    }
     #endregion
 
 
