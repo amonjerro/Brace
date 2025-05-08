@@ -377,6 +377,7 @@ public class DownJumpingState : PlayerState
 
     protected override void OnExit()
     {
+
         // Create a particle system to show landing
         characterReference.TriggerLandingAnimation();
     }

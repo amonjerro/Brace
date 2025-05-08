@@ -43,6 +43,14 @@ public class HealthBarController : MonoBehaviour
     {
         CurrentValue = 1f;
         DesiredValue = 1f;
+        Material mj = new Material(jumpActionSpriteRenderer.material);
+        Material mb = new Material(jumpActionSpriteRenderer.material);
+        Material mf = new Material(jumpActionSpriteRenderer.material);
+
+        jumpActionSpriteRenderer.material = mj;
+        blockActionSpriteRenderer.material = mb;
+        shootActionSpriteRenderer.material = mf;
+
     }
 
 

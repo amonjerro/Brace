@@ -19,15 +19,13 @@ public class Selectable : MonoBehaviour, ISelectHandler, ISubmitHandler
 
     public void OnSelect(BaseEventData data)
     {
-        audioReference.PlaySFX(SelectSound);
+        audioReference.PlaySFX(SelectSound, true);
     }
-
-
 
 
     public void OnSubmit(BaseEventData data)
     {
-        audioReference.PlaySFX(SubmitSound);
+        audioReference.PlaySFX(SubmitSound, true);
     }
 
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.UI;
 
 [RequireComponent(typeof(AudioSource))]
 public class AudioService : AbsGameService
@@ -67,8 +68,12 @@ public class AudioService : AbsGameService
     }
 
 
-    public void PlaySFX(AudioClip sound)
+    public void PlaySFX(AudioClip sound, bool interrupt)
     {
+        if (!interrupt && interruptSource.isPlaying) {
+            return;
+        }
+
         if (interruptSource.isPlaying) {
             interruptSource.Stop();
         }

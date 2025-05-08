@@ -42,7 +42,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AngleOffset: 0
-    - _Arc: 0
+    - _Arc: NaN
     - _EnableExternalAlpha: 0
     - _ZWrite: 0
     m_Colors:

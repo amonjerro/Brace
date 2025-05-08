@@ -7,6 +7,8 @@ public struct CharParams
     // Durations and Timings
     public float jumpDuration;
     public float jumpHeight;
+    public float jumpCooldown;
+
     public float shotCooldown;
     public float attackDuration;
     public float blockCooldown;

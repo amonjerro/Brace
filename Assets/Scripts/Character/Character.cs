@@ -61,9 +61,8 @@ public class Character : MonoBehaviour
     float blockTimer = 0;
     float blockUptickSpeed = 0;
     float blockCooldownTimer = 0;
-    float blockCooldownSpeed = 0;
     float attackCooldown = 0;
-    float attackCooldownSpeed = 0;
+    float jumpCooldownTimer = 0;
     int charges = 0;
     
     // Constants
@@ -287,7 +286,6 @@ public class Character : MonoBehaviour
         b.transform.position = transform.position + forward3 + (forward3 * 0.1f);
         b.Launch(CharacterData.characterParameters.bulletParams, forward3);
         attackCooldown = CharacterData.characterParameters.shotCooldown;
-        attackCooldownSpeed = 1.0f; // To do: Replace this hardcoded number
     }
 
     // Handle Blocking //
@@ -404,21 +402,29 @@ public class Character : MonoBehaviour
     // Updates all cooldowns and informs the UI of any relevant changes
     private void UpdateTimersAndUI()
     {
-        attackCooldown -= TimeUtil.GetDelta() * attackCooldownSpeed;
+        if (CharacterData == null) { return; } 
+        attackCooldown -= TimeUtil.GetDelta();
         blockTimer += TimeUtil.GetDelta() * blockUptickSpeed;
-        blockCooldownTimer -= TimeUtil.GetDelta() * blockCooldownSpeed;
+        blockCooldownTimer -= TimeUtil.GetDelta();
+        jumpCooldownTimer -= TimeUtil.GetDelta();
 
         if (attackCooldown <= 0)
         {
-            attackCooldownSpeed = 0;
+            attackCooldown = 0;
         }
+
         healthBarController.UpdateCooldown(CooldownType.Shoot, TWO_PI * (attackCooldown / CharacterData.characterParameters.shotCooldown));
 
         if (blockCooldownTimer <= 0)
         {
-            blockCooldownSpeed = 0;
+            blockCooldownTimer = 0;
         }
         healthBarController.UpdateCooldown(CooldownType.Block, TWO_PI * (blockCooldownTimer / CharacterData.characterParameters.blockCooldown));
+
+        if (jumpCooldownTimer <= 0) { 
+            jumpCooldownTimer = 0;
+        }
+        healthBarController.UpdateCooldown(CooldownType.Jump, TWO_PI * (jumpCooldownTimer / CharacterData.characterParameters.jumpCooldown));
     }
 
     // Handle Player Input // 
@@ -443,7 +449,7 @@ public class Character : MonoBehaviour
 
     private void OnJump(InputValue input)
     {
-        if (!bInputsEnabled) return;
+        if (!bInputsEnabled || jumpCooldownTimer > 0) return;
         InputMessage im = new InputMessage(EInput.Jump);
         bufferItem.AddInput(im);
     }

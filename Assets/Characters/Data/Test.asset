@@ -15,6 +15,7 @@ MonoBehaviour:
   characterParameters:
     jumpDuration: 0.66
     jumpHeight: 4
+    jumpCooldown: 0.1
     shotCooldown: 1
     attackDuration: 0.2
     blockCooldown: 1
