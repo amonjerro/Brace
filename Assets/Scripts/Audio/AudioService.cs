@@ -57,6 +57,16 @@ public class AudioService : AbsGameService
     // Internals
     bool _bMusicIsPlaying = false;
 
+    private void Awake()
+    {
+        if (!GameInstance.audioInitialized) {
+            GameInstance.InitializeAudio();
+        }
+
+        SFXVolume = GameInstance.sfxVolume;
+        MusicVolume = GameInstance.musicVolume;
+    }
+
     private void Start()
     {
         
