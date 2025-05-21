@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 namespace GameMenus
 {
@@ -7,6 +9,9 @@ namespace GameMenus
     {
         [SerializeField]
         AudioMixer audioMixer;
+
+        [SerializeField]
+        UnityEngine.UI.Selectable defaultSelectable;
 
         public void SetMasterVolume(float volume)
         {
@@ -25,6 +30,18 @@ namespace GameMenus
 
         public void SetFullScreen(bool isFullScreen) { 
             Screen.fullScreen = isFullScreen;
+        }
+
+        public void ExitSettings()
+        {
+            menuManagerReference.CloseMenu(Menus.Options);
+        }
+
+        public override void OnShow()
+        {
+            base.OnShow();
+            Debug.Log("Log some stuff");
+            defaultSelectable.Select();
         }
 
     }

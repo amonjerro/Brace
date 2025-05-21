@@ -9,6 +9,9 @@ namespace GameMenus
         [SerializeField]
         LevelDataSOs LevelData;
 
+        [SerializeField]
+        UnityEngine.UI.Selectable defaultSelectable;
+
         public void Awake()
         {
             GameInstance.selectedLevel = LevelData.Find(Levels.MainMenu);
@@ -28,5 +31,13 @@ namespace GameMenus
         {
             menuManagerReference.OpenMenu(Menus.Options);
         }
+
+        public override void OnShow()
+        {
+            base.OnShow();
+            defaultSelectable.Select();
+        }
+
+
     }
 }
