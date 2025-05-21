@@ -8,9 +8,19 @@ namespace GameMenus
         [SerializeField]
         AudioMixer audioMixer;
 
-        public void SetVolume(float volume)
+        public void SetMasterVolume(float volume)
         {
             audioMixer.SetFloat("Volume", volume);
+        }
+
+        public void SetMusicVolume(float volume)
+        {
+            audioMixer.SetFloat("Music", volume);
+        }
+
+        public void SetSFXVolume(float volume)
+        {
+            audioMixer.SetFloat("SFX", volume);
         }
 
         public void SetFullScreen(bool isFullScreen) { 

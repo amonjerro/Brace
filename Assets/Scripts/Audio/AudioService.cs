@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering.UI;
 
-[RequireComponent(typeof(AudioSource))]
+
 public class AudioService : AbsGameService
 {
     [SerializeField]
