@@ -72,6 +72,7 @@ namespace GameMenus
                 menuList[menu].gameObject.SetActive(true);
             }
             menuList[menu].Open();
+            menuList[menu].Show();
         }
 
         // Hide and close a menu screen.
@@ -126,6 +127,11 @@ namespace GameMenus
             PlayInputSwitch = null;
         }
 
+        public void StackMenu(Menus menu)
+        {
+            menuStack.Push(menu);
+        }
+
     }
 
 
@@ -162,6 +168,7 @@ namespace GameMenus
         // Show menu - useful when switching between stack layers
         public virtual void Show()
         {
+            Debug.Log("Show Called");
             gameObject.SetActive(true);
             OnShow();
         }
@@ -176,6 +183,7 @@ namespace GameMenus
         public virtual void Close()
         {
             animator.SetTrigger(Constants.UIAnimationHide);
+            Hide();
         }
 
         // Back To Main Menu

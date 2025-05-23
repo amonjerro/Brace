@@ -1,7 +1,5 @@
-using System;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.UI;
 
 namespace GameMenus
 {
@@ -40,7 +38,6 @@ namespace GameMenus
         public override void OnShow()
         {
             base.OnShow();
-            Debug.Log("Log some stuff");
             defaultSelectable.Select();
         }
 

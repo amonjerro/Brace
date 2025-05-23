@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace GameMenus
 {
     /// <summary>
@@ -20,6 +21,7 @@ namespace GameMenus
         public void Start()
         {
             menuManagerReference = ServiceLocator.Instance.GetService<MenuManager>();
+            menuManagerReference.StackMenu(MenuType);
         }
 
         public void ToCharacterScreen()
@@ -35,6 +37,7 @@ namespace GameMenus
         public override void OnShow()
         {
             base.OnShow();
+            Debug.Log("MainMenu show");
             defaultSelectable.Select();
         }
 
