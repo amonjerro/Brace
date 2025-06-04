@@ -25,6 +25,8 @@ public static class StrategyFactory
                 return new JumperStrategy();
             case AIControlTypes.Random:
                 return new RandomStrategy();
+            case AIControlTypes.FullAI:
+                return new WorldStateAnticipationStrategy();
             case AIControlTypes.Static:
             default:
                 return new StaticStrategy();

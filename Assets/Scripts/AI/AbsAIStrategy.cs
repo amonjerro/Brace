@@ -124,3 +124,22 @@ public class RandomStrategy : AbsAIStrategy
         }
     }
 }
+
+public class WorldStateAnticipationStrategy : AbsAIStrategy
+{
+    WorldState worldState;
+    public WorldStateAnticipationStrategy() { 
+        worldState = new WorldState();
+    }
+
+    public override void OnUpdate()
+    {
+        UpdateWorldState();
+        
+    }
+
+    private void UpdateWorldState()
+    {
+
+    }
+}
